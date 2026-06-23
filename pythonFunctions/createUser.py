@@ -8,10 +8,10 @@ def createUser(dbName, name, document, dateBirth):
     # Create the user table if it doesnt exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS user (
-            id INTEGER PRIMARY KEY AUTOINCREMENT
-            name TEXT NOT NULL
-            document TEXT NOT NULL
-            dateOfBirth TEXT NOT NULL 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            document TEXT NOT NULL,
+            dateOfBirth TEXT NOT NULL
         )
     ''')
 
