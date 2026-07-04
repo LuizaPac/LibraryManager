@@ -1,0 +1,4 @@
+-I./include
+-I/usr/include/python3.12
+-xc++
+-Wall
