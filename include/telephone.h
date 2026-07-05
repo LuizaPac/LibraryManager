@@ -2,10 +2,10 @@
 
 #include <string>
 
-namespace Library{
+namespace library_system {
 
 struct Telephone{
     std::string telephoneNumber;
 };
 
-}
+} // namespace library_system

@@ -5,7 +5,7 @@
 #include <string>
 #include <iostream>
 
-namespace Library{
+namespace library_system {
 
 class User;
 
@@ -32,4 +32,4 @@ class Book {
         User *checkedOutBy;
 };
 
-}
+} // namespace library_system

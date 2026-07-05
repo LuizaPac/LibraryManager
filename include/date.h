@@ -7,7 +7,7 @@
 #include <cctype>
 #include <iostream>
 
-namespace Library{
+namespace library_system {
 
 class InvalidDateFormat : public std::exception {
     public:
@@ -99,4 +99,4 @@ struct Date {
     }
 };
 
-}
+} // namespace library_system

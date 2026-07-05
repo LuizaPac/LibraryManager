@@ -4,7 +4,7 @@
 #include <iostream>
 #include <exception>
 
-namespace Library{
+namespace library_system {
 
 class InvalidDocument : public std::exception {
     public:
@@ -49,4 +49,4 @@ struct Document{
     }
 };
 
-}
+} // namespace library_system
