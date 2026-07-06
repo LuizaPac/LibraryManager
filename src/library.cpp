@@ -2,7 +2,6 @@
 #include "document.h"
 #include "date.h"
 #include "telephone.h"
-#include <cstddef>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -71,6 +70,17 @@ Library::Library(std::string libraryName) : libraryName(libraryName) {
         if (currentUser != nullptr && currentBook != nullptr){
             currentUser->insertNewBorrowedBook(currentBook);
         }
+    }
+}
+
+Library::~Library(){
+    // Delete all pointers
+    for (User *user : users){
+        delete user;
+    }
+
+    for (Book *book : books){
+        delete book;
     }
 }
 
