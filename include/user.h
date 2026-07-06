@@ -28,16 +28,16 @@ class User{
         std::string getName() const;
         Document getDocumentNumber() const;
         Date getBirthDate() const;
-        std::string getEmail() const;
+        Telephone getTelephone() const;
         std::vector<Book*> getBorrowedBooks() const;
 
     private:
         int userId;
         std::string name;
         Document documentNumber;
-        Date birthDate;
+        Date dateOfBirth;
         Telephone telephone;
-        std::vector<Book*> borrowedBook;
+        std::vector<Book*> borrowedBooks;
 };
 
 } // namespace library_system
