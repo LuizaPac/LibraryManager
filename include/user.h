@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-namespace Library{
+namespace library_system {
 
 // Class book just to say it exists
 class Book;
@@ -40,5 +40,4 @@ class User{
         std::vector<Book*> borrowedBook;
 };
 
-}
-
+} // namespace library_system
