@@ -12,13 +12,13 @@ def createBook(dbName, title, releaseDate, author, gender):
             title TEXT NOT NULL,
             releaseDate TEXT NOT NULL,
             author TEXT NOT NULL,
-            gender TEXT NOT NULL 
+            genre TEXT NOT NULL 
         )
     ''')
 
-    # Put the new user into the database
+    # Put the new book into the database
     cursor.execute('''
-        INSERT INTO books (title, releaseDate, author, gender)
+        INSERT INTO books (title, releaseDate, author, genre)
         values (?, ?, ?, ?)
     ''', (title, releaseDate, author, gender))
 
