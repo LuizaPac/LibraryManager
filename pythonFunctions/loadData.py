@@ -6,7 +6,7 @@ def loadUsers(dbPath):
     cursor = conn.cursor()
 
     # Execute the query and save all results
-    cursor.execute("SELECT id, name, document, dateOfBirth FROM user")
+    cursor.execute("SELECT id, name, document, dateOfBirth, telephone FROM user")
     data = cursor.fetchall()
 
     # Close the connection

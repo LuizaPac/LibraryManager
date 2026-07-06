@@ -15,7 +15,7 @@ class Book;
 
 class User{
     public:
-        User(int, std::string, Document, Date, std::string);
+        User(int, std::string, Document, Date, Telephone);
 
         friend std::ostream &operator<<(std::ostream &, const User &);
 
@@ -36,7 +36,7 @@ class User{
         std::string name;
         Document documentNumber;
         Date birthDate;
-        std::string email;
+        Telephone telephone;
         std::vector<Book*> borrowedBook;
 };
 
