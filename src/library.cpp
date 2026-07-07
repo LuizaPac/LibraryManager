@@ -1,6 +1,7 @@
 #include "library.h"
 #include "document.h"
 #include "date.h"
+#include "lending.h"
 #include "telephone.h"
 #include <string>
 #include <vector>
@@ -43,7 +44,7 @@ Library::Library(std::string libraryName) : libraryName(libraryName) {
     }
 
     // Load loans
-    auto loanList = bd.attr("loadActiveLoans")(libraryName).cast<std::vector<std::tuple<int, int>>>();
+    auto loanList = bd.attr("loadActiveLoans")(libraryName).cast<std::vector<std::tuple<int, int, std::string>>>();
     for (const auto &loan : loanList){
         User *currentUser = nullptr;
         Book *currentBook = nullptr;
@@ -66,9 +67,12 @@ Library::Library(std::string libraryName) : libraryName(libraryName) {
             }
         }
 
-        // Add the borrowed book in the vector of loan books
+        // Create the date struct
+        Date currentDate(std::get<2>(loan));
+
+        // Create the lending object
         if (currentUser != nullptr && currentBook != nullptr){
-            currentUser->insertNewBorrowedBook(currentBook);
+            lendings.push_back(new Lending(currentUser, currentBook, currentDate));
         }
     }
 }
@@ -81,6 +85,10 @@ Library::~Library(){
 
     for (Book *book : books){
         delete book;
+    }
+
+    for (Lending *lending : lendings){
+        delete lending;
     }
 }
 

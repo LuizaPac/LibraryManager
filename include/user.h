@@ -5,7 +5,6 @@
 #include "telephone.h"
 #include <ostream>
 #include <string>
-#include <vector>
 #include <iostream>
 
 namespace library_system {
@@ -19,17 +18,12 @@ class User{
 
         friend std::ostream &operator<<(std::ostream &, const User &);
 
-        void insertNewBorrowedBook(Book*);
-
-        void returnBook(Book*);
-
         // Get methods
         int getUserId() const;
         std::string getName() const;
         Document getDocumentNumber() const;
         Date getBirthDate() const;
         Telephone getTelephone() const;
-        std::vector<Book*> getBorrowedBooks() const;
 
     private:
         int userId;
@@ -37,7 +31,6 @@ class User{
         Document documentNumber;
         Date dateOfBirth;
         Telephone telephone;
-        std::vector<Book*> borrowedBooks;
 };
 
 } // namespace library_system

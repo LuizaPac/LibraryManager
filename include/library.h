@@ -5,6 +5,7 @@
 #include "document.h"
 #include "telephone.h"
 #include "user.h"
+#include "lending.h"
 #include <string>
 #include <vector>
 #include <pybind11/embed.h>
@@ -33,8 +34,9 @@ public:
 
 private:
   std::string libraryName;
-  std::vector<User *> users;
-  std::vector<Book *> books;
+  std::vector<User*> users;
+  std::vector<Book*> books;
+  std::vector<Lending*> lendings;
   pybind11::scoped_interpreter interpreter;
 };
 

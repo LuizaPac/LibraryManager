@@ -32,7 +32,7 @@ def loadActiveLoans(dbPath):
     cursor = conn.cursor()
 
     # Execute the query and save all results
-    cursor.execute("SELECT idUser, idBook FROM checkedOutBooks WHERE checkInDate IS NULL")
+    cursor.execute("SELECT idUser, idBook, checkOutDate FROM checkedOutBooks WHERE checkInDate IS NULL")
     data = cursor.fetchall()
 
     # Close the connection

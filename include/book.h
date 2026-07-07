@@ -21,7 +21,6 @@ class Book {
         Date getReleaseDate() const;
         std::string getAuthor() const;
         std::string getGenre() const;
-        User *getBorrower() const;
 
     private:
         int bookId;
@@ -29,7 +28,6 @@ class Book {
         Date releaseDate;
         std::string author;
         std::string genre;
-        User *checkedOutBy;
 };
 
 } // namespace library_system
