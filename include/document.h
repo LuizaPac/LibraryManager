@@ -40,7 +40,10 @@ struct Document{
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Document &document){
-        output << document.number.substr(0, 3) << "." << document.number.substr(3, 3) << "." << document.number.substr(6, 3) << "-" << document.number.substr(9, 2) << std::endl;
+        output << document.number.substr(0, 3) 
+            << "." << document.number.substr(3, 3) 
+            << "." << document.number.substr(6, 3) 
+            << "-" << document.number.substr(9, 2);
         return output;
     }
 

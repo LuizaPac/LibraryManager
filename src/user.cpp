@@ -1,5 +1,4 @@
 #include "user.h"
-#include "book.h"
 #include "document.h"
 #include "date.h"
 #include "telephone.h"
@@ -16,7 +15,7 @@ std::ostream &operator<<(std::ostream &output, const User &user){
     output << "    User ID: " << user.getUserId() << std::endl;
     output << "    Document number: " << user.getDocumentNumber() << std::endl;
     output << "    Day of birth: " << user.getBirthDate() << std::endl;
-    output << "    Telephone number: " << user.getTelephone() << std::endl;
+    output << "    Telephone number: " << user.getTelephone();
 
     return output;
 }

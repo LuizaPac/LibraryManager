@@ -110,4 +110,20 @@ int Library::newUser(std::string name, Document document, Date dateOfBirth , Tel
     return userId;
 }
 
+void Library::userInfo(Document documentNumber){
+    // Search for the user with the same document in the users vector
+    bool userFound = false;
+    for (const User *user : users){
+        if (user->getDocumentNumber() == documentNumber){
+            userFound = true;
+            std::cout << *user << std::endl;
+            break;
+        }
+    }
+
+    if (!userFound){
+        std::cout << "There is not any user with the document number " << documentNumber << std::endl;
+    }
+}
+
 }

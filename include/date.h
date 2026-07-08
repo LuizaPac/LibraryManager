@@ -61,7 +61,7 @@ struct Date {
         day = tempDay;
     }
 
-    std::string getStringDate(){
+    std::string getStringDate() const{
         std::string yearStr = std::to_string(this->year);
         std::string monthStr = (this->month < 10) ? "0" + std::to_string(this->month) : std::to_string(this->month);
         std::string dayStr = (this->day < 10) ? "0" + std::to_string(this->day) : std::to_string(this->day);
@@ -70,7 +70,8 @@ struct Date {
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Date &date){
-        output << date.day << "/" << date.month << "/" << date.year << std::endl;
+        output << date.getStringDate();
+
         return output;
     }
 
