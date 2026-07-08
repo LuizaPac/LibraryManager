@@ -144,4 +144,20 @@ int Library::newBook(std::string title, Date releaseDate, std::string author, st
     return bookId;
 }
 
+void Library::bookInfo(int bookId){
+    // Search for the book with same ID in the books vector
+    bool bookFound = false;
+    for (const Book *book : books){
+        if (book->getBookId() == bookId){
+            bookFound = true;
+            std::cout << *book << std::endl;
+            break;
+        }
+    }
+
+    if (!bookFound){
+        std::cout << "There is no book with ID " << bookId << std::endl;
+    }
+}
+
 }
