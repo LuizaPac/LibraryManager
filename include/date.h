@@ -12,7 +12,7 @@ namespace library_system {
 class InvalidDateFormat : public std::exception {
     public:
         virtual const char *what() const throw(){
-            return "ERROR: Date should be in the format DD/MM/YYYY.";
+            return "ERROR: Date should be in the format YYYY/MM/DD.";
         }
 };
 
@@ -33,12 +33,12 @@ struct Date {
 
     Date(std::string dateString){
         //Validation (lenght and /)
-        if (dateString.length() != 10 || dateString[2] != '/' || dateString[5] != '/'){
+        if (dateString.length() != 10 || dateString[4] != '/' || dateString[7] != '/'){
             throw InvalidDateFormat();
         }
         // Check if there is only number in the day, month and year
         for (size_t i = 0; i < 10; i++){
-            if (i == 2 || i == 5){
+            if (i == 4 || i == 7){
                 continue;
             }
             if (!std::isdigit(dateString[i])){
@@ -47,9 +47,9 @@ struct Date {
         }
 
         // Transform string into int
-        int tempDay = std::stoi(dateString.substr(0, 2));
-        int tempMonth = std::stoi(dateString.substr(3, 2));
-        int tempYear = std::stoi(dateString.substr(6, 4));
+        int tempYear = std::stoi(dateString.substr(0, 4));
+        int tempMonth = std::stoi(dateString.substr(5, 2));
+        int tempDay = std::stoi(dateString.substr(8, 2));
 
         // Verify if its a valid day and month
         if ((tempDay < 1 || tempDay > 31) || (tempMonth < 1 || tempMonth > 12)){
@@ -59,6 +59,14 @@ struct Date {
         year = tempYear;
         month = tempMonth;
         day = tempDay;
+    }
+
+    std::string getStringDate(){
+        std::string yearStr = std::to_string(this->year);
+        std::string monthStr = (this->month < 10) ? "0" + std::to_string(this->month) : std::to_string(this->month);
+        std::string dayStr = (this->day < 10) ? "0" + std::to_string(this->day) : std::to_string(this->day);
+        
+        return yearStr + "/" + monthStr + "/" + dayStr;
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Date &date){
@@ -71,12 +79,12 @@ struct Date {
         input >> tempDate;
 
         // Same validation as constructor
-        if (tempDate.length() != 10 || tempDate[2] != '/' || tempDate[5] != '/'){
+        if (tempDate.length() != 10 || tempDate[4] != '/' || tempDate[7] != '/'){
             throw InvalidDateFormat();
         }
         // Check if there is only number in the day, month and year
         for (size_t i = 0; i < 10; i++){
-            if (i == 2 || i == 5){
+            if (i == 4 || i == 7){
                 continue;
             }
             if (!std::isdigit(tempDate[i])){
@@ -85,9 +93,9 @@ struct Date {
         }
 
         // Transform string into int
-        int tempDay = std::stoi(tempDate.substr(0, 2));
-        int tempMonth = std::stoi(tempDate.substr(3, 2));
-        int tempYear = std::stoi(tempDate.substr(6, 4));
+        int tempYear = std::stoi(tempDate.substr(0, 4));
+        int tempMonth = std::stoi(tempDate.substr(5, 2));
+        int tempDay = std::stoi(tempDate.substr(8, 2));
 
         // Verify if its a valid day and month
         if ((tempDay < 1 || tempDay > 31) || (tempMonth < 1 || tempMonth > 12)){

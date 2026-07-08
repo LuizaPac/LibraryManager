@@ -14,11 +14,11 @@ namespace library_system {
 
 class Library {
 public:
-  Library(const std::string);
+  Library(const std::string &);
 
   ~Library();
 
-  int newUser(std::string, Document, Date, Telephone, std::string);
+  int newUser(std::string, Document, Date, Telephone);
 
   void userInfo(Document);
 

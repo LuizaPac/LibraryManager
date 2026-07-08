@@ -11,12 +11,12 @@
 
 namespace library_system {
 
-Library::Library(std::string libraryName) : libraryName(libraryName) {
+Library::Library(const std::string &libraryName) : libraryName(libraryName) {
     // Import sys module from Python
     pybind11::module_ sys = pybind11::module_::import("sys");
 
     // Add pythonScripts directory to the search path from Python
-    sys.attr("path").attr("append")("./pythonScripts");
+    sys.attr("path").attr("append")("./pythonFunctions");
 
     // Import the script
     pybind11::module_ bd = pybind11::module_::import("loadData");
@@ -90,6 +90,24 @@ Library::~Library(){
     for (Lending *lending : lendings){
         delete lending;
     }
+}
+
+int Library::newUser(std::string name, Document document, Date dateOfBirth , Telephone telephone){
+    // Check if there is another user with the same document
+    for (const User *user : users){
+        if (document == user->getDocumentNumber()){
+            throw DuplicatedDocument();
+        }
+    }
+
+    // Import the script
+    pybind11::module_ bd = pybind11::module_::import("createUser");
+
+    // Call createUser function
+    int userId = bd.attr("createUser")(libraryName, name, document.number, dateOfBirth.getStringDate(), telephone.telephoneNumber).cast<int>();
+    users.push_back(new User(userId, name, document, dateOfBirth, telephone));
+
+    return userId;
 }
 
 }

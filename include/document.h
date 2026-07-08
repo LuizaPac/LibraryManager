@@ -13,6 +13,14 @@ class InvalidDocument : public std::exception {
         }
 };
 
+class DuplicatedDocument : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. There is another user with the same document.";
+        }
+};
+
+
 struct Document{
     std::string number;
 
