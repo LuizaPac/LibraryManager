@@ -35,5 +35,18 @@ class DuplicatedBook : public std::exception {
         }
 };
 
+class BookAlreadyBorrowed : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This book was already borrowed.";
+        }
+};
+
+class BookNotFound : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This book doesn't exist.";
+        }
+};
 
 } // namespace library_system

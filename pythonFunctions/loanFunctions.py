@@ -18,12 +18,12 @@ def newLoan(dbName, idUser, idBook):
     ''')
 
     # Get today's date
-    today = date.today().isoformat()
+    today = date.today().strftime("%Y/%m/%d")
 
     # Put the new loan into the database
     cursor.execute('''
         INSERT INTO checkedOutBooks (idUser, idBook, checkOutDate)
-        values (?, ?)
+        values (?, ?, ?)
     ''', (idUser, idBook, today))
 
     # Get the new id (last one generated)

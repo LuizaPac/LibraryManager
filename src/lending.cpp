@@ -5,10 +5,12 @@
 
 namespace library_system{
 
-Lending::Lending(User *borrower, Book *borrowedBook, Date lendingDate) : borrower(borrower), borrowedBook(borrowedBook), lendingDate(lendingDate){}
+Lending::Lending(int lendingId, User *borrower, Book *borrowedBook, Date lendingDate)
+    : lendingId(lendingId), borrower(borrower), borrowedBook(borrowedBook), lendingDate(lendingDate){}
 
-User *Lending::getBorrower(){ return borrower; }
-Book *Lending::getBorrowedBook(){ return borrowedBook; }
-Date Lending::getLendingDate(){ return lendingDate; }
+int Lending::getLendingId() const { return lendingId; }
+User *Lending::getBorrower() const { return borrower; }
+Book *Lending::getBorrowedBook() const { return borrowedBook; }
+Date Lending::getLendingDate() const { return lendingDate; }
 
 }

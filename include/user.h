@@ -30,4 +30,11 @@ class User{
         Telephone telephone;
 };
 
+class UserNotFound : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This user doesn't exist.";
+        }
+};
+
 } // namespace library_system

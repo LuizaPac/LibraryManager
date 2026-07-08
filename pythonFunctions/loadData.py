@@ -43,7 +43,7 @@ def loadActiveLoans(dbPath):
 
     # Execute the query and save all results
     try:
-        cursor.execute("SELECT idUser, idBook, checkOutDate FROM checkedOutBooks WHERE checkInDate IS NULL")
+        cursor.execute("SELECT id, idUser, idBook, checkOutDate FROM checkedOutBooks WHERE checkInDate IS NULL")
         data = cursor.fetchall()
     except sqlite3.OperationalError:
         # Se a tabela não existir, avisa no console e devolve uma lista vazia

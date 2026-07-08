@@ -8,14 +8,16 @@ namespace library_system {
 
 class Lending {
     public:
-        Lending(User *, Book *, Date);
+        Lending(int, User *, Book *, Date);
 
         // Get methods
-        User *getBorrower();
-        Book *getBorrowedBook();
-        Date getLendingDate();
+        int getLendingId() const;
+        User *getBorrower() const;
+        Book *getBorrowedBook() const;
+        Date getLendingDate() const;
 
     private:
+        int lendingId;
         User *borrower;
         Book *borrowedBook;
         Date lendingDate;

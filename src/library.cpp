@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <ctime>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 
@@ -44,13 +45,16 @@ Library::Library(const std::string &libraryName) : libraryName(libraryName) {
     }
 
     // Load loans
-    auto loanList = bd.attr("loadActiveLoans")(libraryName).cast<std::vector<std::tuple<int, int, std::string>>>();
+    auto loanList = bd.attr("loadActiveLoans")(libraryName).cast<std::vector<std::tuple<int, int, int, std::string>>>();
     for (const auto &loan : loanList){
         User *currentUser = nullptr;
         Book *currentBook = nullptr;
 
+        // Get lendingId
+        int lendingId = std::get<0>(loan);
+
         // Search for the user
-        int userId = std::get<0>(loan);
+        int userId = std::get<1>(loan);
         for (User *user : users){
             if (user->getUserId() == userId){
                 currentUser = user;
@@ -59,7 +63,7 @@ Library::Library(const std::string &libraryName) : libraryName(libraryName) {
         }
 
         // Search for the book
-        int bookId = std::get<1>(loan);
+        int bookId = std::get<2>(loan);
         for (Book *book : books){
             if (book->getBookId() == bookId){
                 currentBook = book;
@@ -68,11 +72,11 @@ Library::Library(const std::string &libraryName) : libraryName(libraryName) {
         }
 
         // Create the date struct
-        Date currentDate(std::get<2>(loan));
+        Date currentDate(std::get<3>(loan));
 
         // Create the lending object
         if (currentUser != nullptr && currentBook != nullptr){
-            lendings.push_back(new Lending(currentUser, currentBook, currentDate));
+            lendings.push_back(new Lending(lendingId, currentUser, currentBook, currentDate));
         }
     }
 }
@@ -158,6 +162,46 @@ void Library::bookInfo(int bookId){
     if (!bookFound){
         std::cout << "There is no book with ID " << bookId << std::endl;
     }
+}
+
+int Library::bookCheckOut(Document userDocument, int bookId){
+    // Check if the book is already borrowed
+    for (const Lending *lending: lendings){
+        if (lending->getBorrowedBook()->getBookId() == bookId){
+            throw BookAlreadyBorrowed();
+        }
+    }
+
+    // Search for the user
+    for (User *user: users){
+        if (user->getDocumentNumber() == userDocument){
+            // Then search for the book
+            for (Book *book : books){
+                if (book->getBookId() == bookId){
+                    // Import the script
+                    pybind11::module_ bd = pybind11::module_::import("loanFunctions");
+
+                    // Call createBook function
+                    int lendingId = bd.attr("newLoan")(libraryName, user->getUserId(), book->getBookId()).cast<int>();
+
+                    // Get current day
+                    std::time_t currentTime = std::time(nullptr);
+                    std::tm* currentLocalTime = std::localtime(&currentTime);
+                    char buffer[11];
+                    std::strftime(&buffer[0], sizeof(buffer), "%Y/%m/%d", currentLocalTime);
+                    Date currentDay(buffer);
+
+                    lendings.push_back(new Lending(lendingId, user, book, currentDay));
+
+                    return lendingId;
+                }
+            }
+
+            throw BookNotFound();
+        }
+    }
+
+    throw UserNotFound();
 }
 
 }
