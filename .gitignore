@@ -1,2 +1,11 @@
+
+# C++ Standard
 **/build/
+
+# Python Standard
 **/pycache/
+.env
+.venv
+
+# for local testing
+library.db
