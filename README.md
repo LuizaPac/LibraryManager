@@ -4,9 +4,10 @@ Backend in sqlite and python, frontend in c++.
 
 # Database instructions
 
-Create Database
+Create Database with standard values
 '''sql
  sqlite3 library.db < schema.sql
+ sqlite3 library db < standard_data.sql
 '''
 
 Edit Database
