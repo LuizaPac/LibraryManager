@@ -1,11 +1,24 @@
-
-# C++ Standard
+# C++ build artifacts
+build/
 **/build/
+*.o
+*.out
 
-# Python Standard
+# Python caches and test artifacts
+__pycache__/
 **/__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python environments
 .env
 .venv
+venv/
 
-# for local testing
+# Local SQLite databases
 library.db
+*.db-journal
+*.db-shm
+*.db-wal
