@@ -9,9 +9,6 @@
 
 namespace library_system {
 
-// Class book just to say it exists
-class Book;
-
 class User{
     public:
         User(int, std::string, Document, Date, Telephone);

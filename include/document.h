@@ -16,6 +16,9 @@ class InvalidDocument : public std::exception {
 struct Document{
     std::string number;
 
+    // Standart constructor
+    Document(){}
+
     Document(std::string documentNumber){
         // Validation
         if (documentNumber.length() != 11){

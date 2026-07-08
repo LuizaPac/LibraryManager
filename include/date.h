@@ -28,6 +28,9 @@ struct Date {
     int month;
     int day;
 
+    // Standart constructor
+    Date(){}
+
     Date(std::string dateString){
         //Validation (lenght and /)
         if (dateString.length() != 10 || dateString[2] != '/' || dateString[5] != '/'){

@@ -7,8 +7,6 @@
 
 namespace library_system {
 
-class User;
-
 class Book {
     public:
         Book(int, std::string, Date, std::string, std::string);
