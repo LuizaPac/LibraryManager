@@ -15,13 +15,15 @@ or returned values.
 - `.github/workflows/ci.yml`: GitHub Actions workflow. It runs on pushes and
   pull requests to `main`, across Ubuntu runners and Python versions.
 - `requirements.txt`: Python dependencies needed to run the tests.
-- `tests/`: pytest test suite.
-- `tests/test_database_setup.py`: verifies that a database can be created from
-  `schema.sql` and `standard_data.sql`.
-- `tests/test_author_repository.py`: verifies direct Python database calls in
-  `AuthorRepository`.
 - `scripts/create_database.py`: helper used by tests and CI to create isolated
   SQLite databases.
+- `tests/python_db/`: pytest tests for direct Python-to-SQLite behavior. These
+  tests cover database creation and repository classes such as
+  `AuthorRepository`.
+- `tests/cpp/`: future pure C++ unit tests. Use this for C++ classes and methods
+  that do not need Python or SQLite.
+- `tests/integration/`: future cross-boundary tests. Use this when C++ calls
+  Python and Python talks to SQLite.
 
 ## Current CI Matrix
 
@@ -48,11 +50,23 @@ Run syntax checks:
 python -m py_compile pythonFunctions/*.py scripts/*.py
 ```
 
-Run tests:
+Run the current Python database tests:
 
 ```bash
-PYTHONPATH=pythonFunctions:. pytest
+PYTHONPATH=pythonFunctions:. pytest tests/python_db
 ```
+
+## Future Test Jobs
+
+The current CI job only runs `tests/python_db`. When C++ tests are added, split
+CI into separate jobs:
+
+- `python-db-tests`: direct Python repository/database tests.
+- `cpp-unit-tests`: pure C++ unit tests.
+- `integration-tests`: C++ to Python to SQLite tests.
+
+Keeping these jobs separate makes failures easier to diagnose and avoids making
+fast database tests wait for slower integration checks.
 
 ## Good Practices
 
@@ -60,6 +74,8 @@ PYTHONPATH=pythonFunctions:. pytest
 - Use `LIBRARY_DB_PATH` when testing code that calls `pythonFunctions/db.py`.
 - Test behavior, not implementation details.
 - Add a test for each new repository method before connecting it to C++.
+- Put pure C++ tests in `tests/cpp/` and cross-language tests in
+  `tests/integration/`.
 - Keep CI fast; split slow C++ or integration tests into separate jobs later.
 - Do not commit generated files such as `library.db`, `__pycache__`, or build
   directories.
