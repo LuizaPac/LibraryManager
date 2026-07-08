@@ -126,4 +126,22 @@ void Library::userInfo(Document documentNumber){
     }
 }
 
+int Library::newBook(std::string title, Date releaseDate, std::string author, std::string genre){
+    // Check if there is another book with same title
+    for (const Book* book : books){
+        if (book->getTitle() == title){
+            throw DuplicatedBook();
+        }
+    }
+
+    // Import the script
+    pybind11::module_ bd = pybind11::module_::import("createBook");
+
+    // Call createBook function
+    int bookId = bd.attr("createBook")(libraryName, title, releaseDate.getStringDate(), author, genre).cast<int>();
+    books.push_back(new Book(bookId, title, releaseDate, author, genre));
+
+    return bookId;
+}
+
 }

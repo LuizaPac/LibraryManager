@@ -28,4 +28,12 @@ class Book {
         std::string genre;
 };
 
+class DuplicatedBook : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. There is another book with the same title.";
+        }
+};
+
+
 } // namespace library_system
