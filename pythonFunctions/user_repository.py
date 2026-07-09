@@ -42,7 +42,7 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document,
+                    document
                 )
                 VALUES (?, ?, ?, ?, ?)
                 """,
@@ -101,7 +101,7 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document,
+                    document
                 FROM {self.TABLE_NAME}
                 WHERE document = ?
                 """,

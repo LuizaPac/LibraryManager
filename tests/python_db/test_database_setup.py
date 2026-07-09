@@ -6,7 +6,6 @@ from scripts.create_database import create_database
 
 
 EXPECTED_TABLES = {
-    "accepted_document_type",
     "author",
     "book",
     "book_genre",

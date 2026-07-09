@@ -12,8 +12,7 @@ def _create_reader_and_book(db_path):
         "Silva",
         "21999999999",
         "1990-05-20",
-        1,
-        "12345678900",
+        "12345678900"
     )
 
     author_repository = AuthorRepository(str(db_path))
