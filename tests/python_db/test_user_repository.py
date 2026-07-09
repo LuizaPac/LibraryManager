@@ -13,7 +13,6 @@ def test_user_repository_create_get_and_search(tmp_path, monkeypatch):
         "Silva",
         "21999999999",
         "1990-05-20",
-        1,
         "12345678900",
     )
 
@@ -23,7 +22,6 @@ def test_user_repository_create_get_and_search(tmp_path, monkeypatch):
         "Silva",
         "21999999999",
         "1990-05-20",
-        1,
         "12345678900",
     )
     assert repository.get_by_id(user_id) == expected
