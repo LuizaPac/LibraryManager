@@ -1,16 +1,22 @@
 # Library Management System
 
 Backend in sqlite and python, frontend in c++.
-Colaborators guide readme, should be changed in the future for deploy versions. 
 
-## Commit pattern
+# Database instructions
 
-- Feat: New feature added
-- Doc: Documentation update
-- Fix: Bug Fix
-- Refactor: Code refactor, no new feature
-- Revert: Rollback to previous Commit
-- Test: Test has been included
+Create Database with standard values:
 
-others: Please include for future reference
+```sql
+ sqlite3 library.db < schema.sql
+ sqlite3 library db < standard_data.sql
+```
 
+Edit Database:
+```sql
+sqlite3 library.db
+```
+
+Exit Database edit mode:
+```sql
+.quit
+```
