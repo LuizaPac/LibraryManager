@@ -1,4 +1,5 @@
 #include "library.h"
+#include "book.h"
 #include "document.h"
 #include "date.h"
 #include "lending.h"
@@ -232,6 +233,32 @@ void Library::bookCheckIn(Document userDocument, int bookId){
         }
     }
     throw BookWasNotBorrowed();
+}
+
+void Library::bookStatus(int bookId){
+    // Search for the book in the lendings vector
+    for (const Lending *lending : lendings){
+        if (lending->getBorrowedBook()->getBookId() == bookId){
+            std::cout << *(lending->getBorrowedBook()) << std::endl
+                << "    Status: Borrowed" << std::endl << std::endl
+                << "Borrower:" <<std::endl
+                << *(lending->getBorrower()) << std::endl << std::endl;
+
+            return;
+        }
+    }
+
+    // If doesn't find in lendings vector, check in the books vector
+    for (const Book *book : books){
+        if (book->getBookId() == bookId){
+            std::cout << *book << std::endl
+                << "    Status: Available for loan" << std::endl << std::endl;
+
+            return;
+        }
+    }
+
+    throw BookNotFound();
 }
 
 }
