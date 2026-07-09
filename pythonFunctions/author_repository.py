@@ -6,6 +6,25 @@ class AuthorRepository:
 
     def __init__(self, db_path=None):
         self.db_path = db_path
+        self._check_table_exists()
+
+    def _check_table_exists(self):
+        with connect(self.db_path) as conn:
+            row = conn.execute(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type = 'table'
+                  AND name = ?
+                """,
+                (self.TABLE_NAME,),
+            ).fetchone()
+
+            if row is None:
+                raise RuntimeError(
+                    f"Table '{self.TABLE_NAME}' does not exist. "
+                    "Run scripts/create_database.py first."
+                )
 
     def create(self, name):
         with connect(self.db_path) as conn:
