@@ -11,4 +11,5 @@ def test_author_repository_create_get_and_search(tmp_path, monkeypatch):
     author_id = repository.create("Machado de Assis")
 
     assert repository.get_by_id(author_id) == (author_id, "Machado de Assis")
-    assert repository.search_by_name("Machado") == [(author_id, "Machado de Assis")]
+    assert repository.search_by_name("Machado") == [(author_id,
+                                                     "Machado de Assis")]

@@ -56,6 +56,7 @@ flowchart LR
 |-----|------|------|------|--------|
 | PK | id | INTEGER | ❌ | ✅ |
 | | title | VARCHAR(100) | ❌ | ❌ |
+| | release_date | DATE | ❌ | ❌ |
 | FK | author_id | INTEGER | ❌ | ❌ |
 | FK | genre_id | INTEGER | ❌ | ❌ |
 

@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS reader (
 CREATE TABLE IF NOT EXISTS book (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title VARCHAR(100) NOT NULL,
+    release_date DATE NOT NULL,
     author_id INTEGER NOT NULL,
     genre_id INTEGER NOT NULL,
     FOREIGN KEY (author_id)
