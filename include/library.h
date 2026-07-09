@@ -28,7 +28,7 @@ public:
 
   int bookCheckOut(Document, int);
 
-  int bookCheckIn(Document, int);
+  void bookCheckIn(Document, int);
 
   void bookStatus(int);
 
@@ -38,6 +38,13 @@ private:
   std::vector<Book*> books;
   std::vector<Lending*> lendings;
   pybind11::scoped_interpreter interpreter;
+};
+
+class CheckInFailed : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. Something happens in checkin. Try again.";
+        }
 };
 
 } // namespace library_system

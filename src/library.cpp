@@ -204,4 +204,34 @@ int Library::bookCheckOut(Document userDocument, int bookId){
     throw UserNotFound();
 }
 
+void Library::bookCheckIn(Document userDocument, int bookId){
+    // Search for the book in the lending vector
+    for (size_t i = 0; i < lendings.size(); i++){
+        if (lendings[i]->getBorrowedBook()->getBookId() == bookId){
+            // Check if is the same user
+            if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument){
+                // Import the script
+                pybind11::module_ bd = pybind11::module_::import("loanFunctions");
+
+                // Call checkInBook function
+                bool success = bd.attr("checkInBook")(libraryName, lendings[i]->getBorrowedBook()->getBookId()).cast<bool>();
+
+                if (success){
+                    // Delete the pointer and remove from the lendings vector
+                    delete lendings[i];
+                    lendings.erase(lendings.begin() + i);
+                    return;
+                }
+                else {
+                    throw CheckInFailed();
+                }
+            }
+            else {
+                throw WrongUser();
+            }
+        }
+    }
+    throw BookWasNotBorrowed();
+}
+
 }

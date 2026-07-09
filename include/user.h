@@ -37,4 +37,11 @@ class UserNotFound : public std::exception {
         }
 };
 
+class WrongUser : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This user didn't borrowed this book.";
+        }
+};
+
 } // namespace library_system

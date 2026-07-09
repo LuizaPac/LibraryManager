@@ -49,4 +49,11 @@ class BookNotFound : public std::exception {
         }
 };
 
+class BookWasNotBorrowed : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This book wasn't borrowed.";
+        }
+};
+
 } // namespace library_system
