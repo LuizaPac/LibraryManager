@@ -31,10 +31,7 @@ The workflow tests on:
 
 - `ubuntu-latest`
 - `ubuntu-22.04`
-- Python `3.11`, `3.12`, `3.13`, `3.14`, `3.15`, and `3.16-dev`
-
-`3.16-dev` is used for the development version. If it becomes a stable release,
-the workflow can be changed to `3.16`.
+- Python `3.11`, `3.12`, `3.13`, `3.14`, `3.15`
 
 ## Running Tests Locally
 
