@@ -1,6 +1,8 @@
 #pragma once
 
 #include "date.h"
+#include "author.h"
+#include "genre.h"
 #include <ostream>
 #include <string>
 #include <iostream>
@@ -9,7 +11,7 @@ namespace library_system {
 
 class Book {
     public:
-        Book(int, std::string, Date, std::string, std::string);
+        Book(int, std::string, Date, Author *, Genre *);
 
         friend std::ostream &operator<<(std::ostream &, const Book &);
 
@@ -17,15 +19,15 @@ class Book {
         int getBookId() const;
         std::string getTitle() const;
         Date getReleaseDate() const;
-        std::string getAuthor() const;
-        std::string getGenre() const;
+        Author *getAuthor() const;
+        Genre *getGenre() const;
 
     private:
         int bookId;
         std::string title;
         Date releaseDate;
-        std::string author;
-        std::string genre;
+        Author *author;
+        Genre *genre;
 };
 
 class DuplicatedBook : public std::exception {
