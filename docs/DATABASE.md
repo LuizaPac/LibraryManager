@@ -26,13 +26,10 @@ flowchart LR
     book["book"]
     book_genre["book_genre"]
     reader["reader"]
-    accepted_document_type["accepted_document_type"]
     lending["lending"]
 
     author -->|"1:N"| book
     book_genre -->|"1:N"| book
-
-    accepted_document_type -->|"1:N"| reader
 
     reader -->|"1:N"| lending
     book -->|"1:N"| lending
@@ -71,15 +68,6 @@ flowchart LR
 
 ---
 
-## accepted_document_type
-
-| Key | Nome | Tipo | NULL | UNIQUE |
-|-----|------|------|------|--------|
-| PK | id | INTEGER | ❌ | ✅ |
-| | document_type_name | VARCHAR(30) | ❌ | ❌ |
-
----
-
 ## reader
 
 | Key | Nome | Tipo | NULL | UNIQUE |
@@ -88,10 +76,9 @@ flowchart LR
 | | first_name | VARCHAR(50) | ❌ | ❌ |
 | | last_name | VARCHAR(50) | ❌ | ❌ |
 | | email | VARCHAR(100) | ✅ | ✅ |
-| | phone_number | VARCHAR(20) | ✅ | ❌ |
+| | phone_number | VARCHAR(20) | ❌ | ❌ |
 | | birthday | DATE | ❌ | ❌ |
-| FK | document_type_id | INTEGER | ❌ | ❌ |
-| | document_identification | CHAR(30) | ❌ | ✅ |
+| | document | VARCHAR(20) | ❌ | ❌ |
 
 ---
 
@@ -103,7 +90,7 @@ flowchart LR
 | FK | reader_id | INTEGER | ❌ | ❌ |
 | FK | book_id | INTEGER | ❌ | ❌ |
 | | lending_date | DATE | ❌ | ❌ |
-| | expected_return_date | DATE | ❌ | ❌ |
+| | expected_return_date | DATE | ✅ | ❌ |
 | | return_date | DATE | ✅ | ❌ |
 
 ---
