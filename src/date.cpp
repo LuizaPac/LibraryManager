@@ -53,34 +53,7 @@ std::istream &operator>>(std::istream &input, Date &date){
     std::string tempDate;
     input >> tempDate;
 
-    // Same validation as constructor
-    if (tempDate.length() != 10 || tempDate[4] != '/' || tempDate[7] != '/'){
-        throw InvalidDateFormat();
-    }
-
-    // Check if there is only number in the day, month and year
-    for (size_t i = 0; i < 10; i++){
-        if (i == 4 || i == 7){
-            continue;
-        }
-        if (!std::isdigit(tempDate[i])){
-            throw InvalidDateFormat();
-        }
-    }
-
-    // Transform string into int
-    int tempYear = std::stoi(tempDate.substr(0, 4));
-    int tempMonth = std::stoi(tempDate.substr(5, 2));
-    int tempDay = std::stoi(tempDate.substr(8, 2));
-
-    // Verify if its a valid day and month
-    if ((tempDay < 1 || tempDay > 31) || (tempMonth < 1 || tempMonth > 12)){
-        throw InvalidDate();
-    }
-
-    date.year = tempYear;
-    date.month = tempMonth;
-    date.day = tempDay;
+    date = Date(tempDate);
 
     return input;
 }
