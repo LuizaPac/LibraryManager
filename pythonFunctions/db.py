@@ -10,8 +10,8 @@ def get_db_path():
     return Path(os.environ.get("LIBRARY_DB_PATH", DEFAULT_DB_PATH))
 
 
-def connect():
-    db_path = get_db_path()
+def connect(db_path=None):
+    db_path = Path(db_path) if db_path is not None else get_db_path()
 
     if not db_path.exists():
         raise FileNotFoundError(
