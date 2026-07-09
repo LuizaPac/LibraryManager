@@ -14,10 +14,4 @@ INSERT OR IGNORE INTO book_genre (id, genre) VALUES
     (9, 'Horror'),
     (10, 'Poetry');
 
-INSERT OR IGNORE INTO accepted_document_type (id, document_type_name) VALUES
-    (1, 'CPF'),
-    (2, 'RG'),
-    (3, 'Passport'),
-    (4, 'Driver License');
-
 COMMIT;
