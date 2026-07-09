@@ -1,264 +1,328 @@
 #include "library.h"
 #include "book.h"
-#include "document.h"
 #include "date.h"
+#include "document.h"
 #include "lending.h"
 #include "telephone.h"
-#include <string>
-#include <vector>
-#include <tuple>
 #include <ctime>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
+#include <stdexcept>
+#include <string>
+#include <tuple>
+#include <vector>
+
+// BIG TODO:: Replace c_outs with return methods in order to fit multiple
+// frontend interfaces
 
 namespace library_system {
 
-Library::Library(const std::string &libraryName) : libraryName(libraryName) {
-    // Import sys module from Python
-    pybind11::module_ sys = pybind11::module_::import("sys");
+Library::Library() {
+  namespace py = pybind11;
 
-    // Add pythonScripts directory to the search path from Python
-    sys.attr("path").attr("append")("./pythonFunctions");
+  // Import sys module from Python
+  py::module_ sys = py::module_::import("sys");
 
-    // Import the script
-    pybind11::module_ bd = pybind11::module_::import("loadData");
+  // Add pythonFunctions directory to the search path
+  sys.attr("path").attr("append")("./pythonFunctions");
 
-    // Load users
-    auto userList = bd.attr("loadUsers")(libraryName).cast<std::vector<std::tuple<int, std::string, std::string, std::string, std::string>>>();
-    for (const auto &user : userList) {
-        int id = std::get<0>(user);
-        std::string name = std::get<1>(user);
-        Document document(std::get<2>(user));
-        Date dateOfBirth(std::get<3>(user));
-        Telephone telephone(std::get<4>(user));
-        users.push_back(new User(id, name, document, dateOfBirth, telephone));
-    }
+  // Import scripts and save as variables from library class
+  authorRepository =
+      py::module_::import("author_repository").attr("AuthorRepository")();
+  bookGenreRepository = py::module_::import("book_genre_repository")
+                            .attr("BookGenreRepository")();
+  documentTypeRepository = py::module_::import("document_type_repository")
+                               .attr("DocumentTypeRepository")();
+  userRepository =
+      py::module_::import("user_repository").attr("UserRepository")();
+  bookRepository =
+      py::module_::import("book_repository").attr("BookRepository")();
+  lendingRepository =
+      py::module_::import("lending_repository").attr("LendingRepository")();
 
-    // Load books
-    auto bookList = bd.attr("loadBooks")(libraryName).cast<std::vector<std::tuple<int, std::string, std::string, std::string, std::string>>>();
-    for (const auto &book : bookList) {
-        int id = std::get<0>(book);
-        std::string title = std::get<1>(book);
-        Date releaseDate(std::get<2>(book));
-        std::string author = std::get<3>(book);
-        std::string genre = std::get<4>(book);
-        books.push_back(new Book(id, title, releaseDate, author, genre));
-    }
+  // Load database to Library
+  // author : vector of (id, str)
+  auto authorList = authorRepository.attr("get_all")()
+                        .cast<std::vector<std::tuple<int, std::string>>>();
+  for (const auto &author : authorList) {
+    int id = std::get<0>(author);
+    std::string name = std::get<1>(author);
 
-    // Load loans
-    auto loanList = bd.attr("loadActiveLoans")(libraryName).cast<std::vector<std::tuple<int, int, int, std::string>>>();
-    for (const auto &loan : loanList){
-        User *currentUser = nullptr;
-        Book *currentBook = nullptr;
+    authors.push_back(new Author(id, name));
+  }
 
-        // Get lendingId
-        int lendingId = std::get<0>(loan);
+  // genre : vector of (id, str)
+  auto genreList = bookGenreRepository.attr("get_all")()
+                       .cast<std::vector<std::tuple<int, std::string>>>();
+  for (const auto &genre : genreList) {
+    int id = std::get<0>(genre);
+    std::string name = std::get<1>(genre);
 
-        // Search for the user
-        int userId = std::get<1>(loan);
-        for (User *user : users){
-            if (user->getUserId() == userId){
-                currentUser = user;
-                break;
-            }
-        }
+    // genres.push_back(new Genre(id, name));
+  }
 
-        // Search for the book
-        int bookId = std::get<2>(loan);
-        for (Book *book : books){
-            if (book->getBookId() == bookId){
-                currentBook = book;
-                break;
-            }
-        }
+  // user : vector of (int, str, str, str, str, str)
+  auto userList =
+      userRepository.attr("get_all")()
+          .cast<
+              std::vector<std::tuple<int, std::string, std::string, std::string,
+                                     std::string, std::string>>>();
+  for (const auto &user : userList) {
+    int id = std::get<0>(user);
+    std::string fName = std::get<1>(user);
+    std::string lName = std::get<2>(user);
+    Document document(std::get<3>(user));
+    Telephone telephone(std::get<5>(user));
+    Date dateOfBirth(std::get<4>(user));
 
-        // Create the date struct
-        Date currentDate(std::get<3>(loan));
+    users.push_back(new User(id, fName, lName, document, dateOfBirth,
+                             Telephone(telephone)));
+  }
 
-        // Create the lending object
-        if (currentUser != nullptr && currentBook != nullptr){
-            lendings.push_back(new Lending(lendingId, currentUser, currentBook, currentDate));
-        }
-    }
-}
+  // book : vector of (int, str, str, str, str, str)
+  auto bookList =
+      bookRepository.attr("get_all")()
+          .cast<std::vector<std::tuple<int, std::string, std::string,
+                                       std::string, std::string>>>();
+  for (const auto &book : bookList) {
+    int id = std::get<0>(book);
+    std::string title = std::get<1>(book);
+    Date releaseDate(std::get<2>(book));
+    std::string author = std::get<3>(book);
+    std::string genre = std::get<4>(book);
+    books.push_back(new Book(id, title, releaseDate, author, genre));
+  }
 
-Library::~Library(){
-    // Delete all pointers
-    for (User *user : users){
-        delete user;
-    }
+  // Lending : vector of int, int, int, std::string
+  auto lendingList =
+      lendingRepository.attr("loadActiveLoans")(libraryName)
+          .cast<std::vector<
+              std::tuple<int, int, int, std::string, std::string>>>();
+  for (const auto &loan : lendingList) {
+    User *currentUser = nullptr;
+    Book *currentBook = nullptr;
 
-    for (Book *book : books){
-        delete book;
-    }
-
-    for (Lending *lending : lendings){
-        delete lending;
-    }
-}
-
-int Library::newUser(std::string name, Document document, Date dateOfBirth , Telephone telephone){
-    // Check if there is another user with the same document
-    for (const User *user : users){
-        if (document == user->getDocumentNumber()){
-            throw DuplicatedDocument();
-        }
-    }
-
-    // Import the script
-    pybind11::module_ bd = pybind11::module_::import("createUser");
-
-    // Call createUser function
-    int userId = bd.attr("createUser")(libraryName, name, document.number, dateOfBirth.getStringDate(), telephone.telephoneNumber).cast<int>();
-    users.push_back(new User(userId, name, document, dateOfBirth, telephone));
-
-    return userId;
-}
-
-void Library::userInfo(Document documentNumber){
-    // Search for the user with the same document in the users vector
-    bool userFound = false;
-    for (const User *user : users){
-        if (user->getDocumentNumber() == documentNumber){
-            userFound = true;
-            std::cout << *user << std::endl;
-            break;
-        }
-    }
-
-    if (!userFound){
-        std::cout << "There is not any user with the document number " << documentNumber << std::endl;
-    }
-}
-
-int Library::newBook(std::string title, Date releaseDate, std::string author, std::string genre){
-    // Check if there is another book with same title
-    for (const Book* book : books){
-        if (book->getTitle() == title){
-            throw DuplicatedBook();
-        }
-    }
-
-    // Import the script
-    pybind11::module_ bd = pybind11::module_::import("createBook");
-
-    // Call createBook function
-    int bookId = bd.attr("createBook")(libraryName, title, releaseDate.getStringDate(), author, genre).cast<int>();
-    books.push_back(new Book(bookId, title, releaseDate, author, genre));
-
-    return bookId;
-}
-
-void Library::bookInfo(int bookId){
-    // Search for the book with same ID in the books vector
-    bool bookFound = false;
-    for (const Book *book : books){
-        if (book->getBookId() == bookId){
-            bookFound = true;
-            std::cout << *book << std::endl;
-            break;
-        }
-    }
-
-    if (!bookFound){
-        std::cout << "There is no book with ID " << bookId << std::endl;
-    }
-}
-
-int Library::bookCheckOut(Document userDocument, int bookId){
-    // Check if the book is already borrowed
-    for (const Lending *lending: lendings){
-        if (lending->getBorrowedBook()->getBookId() == bookId){
-            throw BookAlreadyBorrowed();
-        }
-    }
+    // Get lendingId
+    int lendingId = std::get<0>(loan);
 
     // Search for the user
-    for (User *user: users){
-        if (user->getDocumentNumber() == userDocument){
-            // Then search for the book
-            for (Book *book : books){
-                if (book->getBookId() == bookId){
-                    // Import the script
-                    pybind11::module_ bd = pybind11::module_::import("loanFunctions");
-
-                    // Call createBook function
-                    int lendingId = bd.attr("newLoan")(libraryName, user->getUserId(), book->getBookId()).cast<int>();
-
-                    // Get current day
-                    std::time_t currentTime = std::time(nullptr);
-                    std::tm* currentLocalTime = std::localtime(&currentTime);
-                    char buffer[11];
-                    std::strftime(&buffer[0], sizeof(buffer), "%Y/%m/%d", currentLocalTime);
-                    Date currentDay(buffer);
-
-                    lendings.push_back(new Lending(lendingId, user, book, currentDay));
-
-                    return lendingId;
-                }
-            }
-
-            throw BookNotFound();
-        }
+    int userId = std::get<1>(loan);
+    for (User *user : users) {
+      if (user->getUserId() == userId) {
+        currentUser = user;
+        break;
+      }
     }
 
-    throw UserNotFound();
-}
-
-void Library::bookCheckIn(Document userDocument, int bookId){
-    // Search for the book in the lending vector
-    for (size_t i = 0; i < lendings.size(); i++){
-        if (lendings[i]->getBorrowedBook()->getBookId() == bookId){
-            // Check if is the same user
-            if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument){
-                // Import the script
-                pybind11::module_ bd = pybind11::module_::import("loanFunctions");
-
-                // Call checkInBook function
-                bool success = bd.attr("checkInBook")(libraryName, lendings[i]->getBorrowedBook()->getBookId()).cast<bool>();
-
-                if (success){
-                    // Delete the pointer and remove from the lendings vector
-                    delete lendings[i];
-                    lendings.erase(lendings.begin() + i);
-                    return;
-                }
-                else {
-                    throw CheckInFailed();
-                }
-            }
-            else {
-                throw WrongUser();
-            }
-        }
-    }
-    throw BookWasNotBorrowed();
-}
-
-void Library::bookStatus(int bookId){
-    // Search for the book in the lendings vector
-    for (const Lending *lending : lendings){
-        if (lending->getBorrowedBook()->getBookId() == bookId){
-            std::cout << *(lending->getBorrowedBook()) << std::endl
-                << "    Status: Borrowed" << std::endl << std::endl
-                << "Borrower:" <<std::endl
-                << *(lending->getBorrower()) << std::endl << std::endl;
-
-            return;
-        }
+    // Search for the book
+    int bookId = std::get<2>(loan);
+    for (Book *book : books) {
+      if (book->getBookId() == bookId) {
+        currentBook = book;
+        break;
+      }
     }
 
-    // If doesn't find in lendings vector, check in the books vector
-    for (const Book *book : books){
-        if (book->getBookId() == bookId){
-            std::cout << *book << std::endl
-                << "    Status: Available for loan" << std::endl << std::endl;
+    // Create the date struct
+    Date lendingDate(std::get<3>(loan));
+    Date returnDate(std::get<4>(loan));
 
-            return;
-        }
+    // Create the lending object
+    if (currentUser != nullptr && currentBook != nullptr) {
+      lendings.push_back(new Lending(lendingId, currentUser, currentBook,
+                                     lendingDate, returnDate));
     }
-
-    throw BookNotFound();
+  }
 }
 
+Library::~Library() {
+  // Delete all pointers
+  for (User *user : users) {
+    delete user;
+  }
+
+  for (Book *book : books) {
+    delete book;
+  }
+
+  for (Lending *lending : lendings) {
+    delete lending;
+  }
 }
+
+int Library::newUser(std::string fname, std::string lname, Document document,
+                     Date dateOfBirth, Telephone telephone) {
+  for (const User *user : users) {
+    if (document == user->getDocumentNumber()) {
+      throw DuplicatedDocument();
+    }
+  }
+
+  int userId = userRepository
+                   .attr("create")(fname, lname, telephone.telephoneNumber,
+                                   dateOfBirth.getStringDate(), document.number)
+                   .cast<int>();
+
+  users.push_back(
+      new User(userId, fname, lname, document, dateOfBirth, telephone));
+
+  return userId;
+}
+
+void Library::userInfo(Document documentNumber) {
+  // Search for the user with the same document in the users vector
+  bool userFound = false;
+  for (const User *user : users) {
+    if (user->getDocumentNumber() == documentNumber) {
+      userFound = true;
+      std::cout << *user << std::endl;
+      break;
+    }
+  }
+
+  if (!userFound) {
+    std::cout << "There is not any user with the document number "
+              << documentNumber << std::endl;
+  }
+}
+
+// TODO: Find author id before pushig (let the user chose the author)
+int Library::newBook(std::string title, Date releaseDate, std::string author,
+                     std::string genre) {
+  for (const Book *book : books) {
+    if (book->getTitle() == title) {
+      throw DuplicatedBook();
+    }
+  }
+
+  pybind11::tuple authorRow =
+      authorRepository.attr("get_or_create")(author).cast<pybind11::tuple>();
+  int authorId = authorRow[0].cast<int>();
+  authors[authorId] = authorRow[1].cast<std::string>();
+
+  /* TODO add genre object
+  int genreId = findIdByValue(bookGenres, genre);
+  if (genreId == 0) {
+    throw std::runtime_error("ERROR. This book genre doesn't exist.");
+  }*/
+
+  int bookId = bookRepository
+                   .attr("create")(title, releaseDate.getStringDate(), authorId,
+                                   1) // genreId)
+                   .cast<int>();
+
+  // TODO: add pointer to genre and author to create the book
+  books.push_back(new Book(bookId, title, releaseDate, author, genre));
+
+  return bookId;
+}
+
+void Library::bookInfo(int bookId) {
+  // Search for the book with same ID in the books vector
+  bool bookFound = false;
+  for (const Book *book : books) {
+    if (book->getBookId() == bookId) {
+      bookFound = true;
+      std::cout << *book << std::endl;
+      break;
+    }
+  }
+
+  if (!bookFound) {
+    std::cout << "There is no book with ID " << bookId << std::endl;
+  }
+}
+
+int Library::landBook(Document userDocument, int bookId) {
+  for (const Lending *lending : lendings) {
+    if (lending->getBorrowedBook()->getBookId() == bookId) {
+      throw BookAlreadyBorrowed();
+    }
+  }
+
+  for (User *user : users) {
+    if (user->getDocumentNumber() == userDocument) {
+      for (Book *book : books) {
+        if (book->getBookId() == bookId) {
+          std::time_t currentTime = std::time(nullptr);
+          // std::time_t expectedReturnTime = currentTime + (14 * 24 * 60 * 60);
+          // Get current day
+          std::tm *currentLocalTime = std::localtime(&currentTime);
+          char buffer[11];
+          std::strftime(&buffer[0], sizeof(buffer), "%Y-%m-%d",
+                        currentLocalTime);
+          Date currentDay(buffer);
+
+          int lendingId = lendingRepository
+                              .attr("create")(user->getUserId(),
+                                              book->getBookId(), currentDay, "")
+                              .cast<int>();
+
+          lendings.push_back(
+              new Lending(lendingId, user, book, currentDay, Date()));
+
+          return lendingId;
+        }
+      }
+
+      throw BookNotFound();
+    }
+  }
+  throw UserNotFound();
+}
+
+void Library::returnBook(Document userDocument, int bookId) {
+  // Search for the book in the lending vector
+  for (size_t i = 0; i < lendings.size(); i++) {
+    if (lendings[i]->getBorrowedBook()->getBookId() == bookId) {
+      // Check if is the same user
+      if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument) {
+        bool success = lendingRepository
+                           .attr("check_in_book")(
+                               lendings[i]->getBorrowedBook()->getBookId())
+                           .cast<bool>();
+
+        if (success) {
+          lendings[i]->setReturnDate(Date());
+        } else {
+          throw CheckInFailed();
+        }
+      } else {
+        throw WrongUser();
+      }
+    }
+  }
+  throw BookWasNotBorrowed();
+}
+
+// TODO: check date of every book instead of just checking just loan object
+void Library::bookStatus(int bookId) {
+  // Search for the book in the lendings vector
+  for (const Lending *lending : lendings) {
+    if (lending->getBorrowedBook()->getBookId() == bookId) {
+      std::cout << *(lending->getBorrowedBook()) << std::endl
+                << "    Status: Borrowed" << std::endl
+                << std::endl
+                << "Borrower:" << std::endl
+                << *(lending->getBorrower()) << std::endl
+                << std::endl;
+
+      return;
+    }
+  }
+
+  // If doesn't find in lendings vector, check in the books vector
+  for (const Book *book : books) {
+    if (book->getBookId() == bookId) {
+      std::cout << *book << std::endl
+                << "    Status: Available for loan" << std::endl
+                << std::endl;
+
+      return;
+    }
+  }
+
+  throw BookNotFound();
+}
+
+} // namespace library_system
