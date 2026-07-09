@@ -32,8 +32,7 @@ class UserRepository:
         last_name,
         phone_number,
         birthday,
-        document_type_id,
-        document_identification,
+        document,
     ):
         with connect(self.db_path) as conn:
             cursor = conn.execute(
@@ -43,18 +42,16 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification
+                    document,
                 )
-                VALUES (?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
                 """,
                 (
                     first_name,
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification,
+                    document,
                 ),
             )
             return cursor.lastrowid
@@ -69,8 +66,7 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification
+                    document
                 FROM {self.TABLE_NAME}
                 ORDER BY first_name, last_name
                 """
@@ -87,8 +83,7 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification
+                    document
                 FROM {self.TABLE_NAME}
                 WHERE id = ?
                 """,
@@ -96,7 +91,7 @@ class UserRepository:
             ).fetchone()
             return tuple(row) if row else None
 
-    def get_by_document(self, document_identification):
+    def get_by_document(self, document):
         with connect(self.db_path) as conn:
             row = conn.execute(
                 f"""
@@ -106,12 +101,11 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification
+                    document,
                 FROM {self.TABLE_NAME}
-                WHERE document_identification = ?
+                WHERE document = ?
                 """,
-                (document_identification,),
+                (document,),
             ).fetchone()
             return tuple(row) if row else None
 
@@ -125,8 +119,7 @@ class UserRepository:
                     last_name,
                     phone_number,
                     birthday,
-                    document_type_id,
-                    document_identification
+                    document
                 FROM {self.TABLE_NAME}
                 WHERE first_name LIKE ?
                    OR last_name LIKE ?
