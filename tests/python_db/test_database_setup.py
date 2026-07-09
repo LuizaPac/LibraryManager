@@ -1,5 +1,7 @@
 import sqlite3
 
+import pytest
+
 from scripts.create_database import create_database
 
 
@@ -23,11 +25,30 @@ def test_create_database_builds_schema_and_standard_data(tmp_path):
                 "SELECT name FROM sqlite_master WHERE type = 'table'"
             )
         }
-        genre_count = conn.execute("SELECT COUNT(*) FROM book_genre").fetchone()[0]
+        book_columns = {
+            row[1]
+            for row in conn.execute("PRAGMA table_info(book)")
+        }
+        genre_count = conn.execute("SELECT COUNT(*) FROM book_genre"
+                                   ).fetchone()[0]
         document_type_count = conn.execute(
             "SELECT COUNT(*) FROM accepted_document_type"
         ).fetchone()[0]
 
     assert EXPECTED_TABLES.issubset(tables)
+    assert "release_date" in book_columns
     assert genre_count == 10
     assert document_type_count == 4
+
+
+def test_connect_raises_when_database_file_does_not_exist(tmp_path,
+                                                          monkeypatch):
+    missing_db_path = tmp_path / "missing.db"
+    monkeypatch.setenv("LIBRARY_DB_PATH", str(missing_db_path))
+
+    from db import connect
+
+    with pytest.raises(FileNotFoundError, match="Database not found"):
+        connect()
+
+    assert not missing_db_path.exists()

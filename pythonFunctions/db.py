@@ -11,7 +11,14 @@ def get_db_path():
 
 
 def connect():
-    conn = sqlite3.connect(get_db_path())
+    db_path = get_db_path()
+
+    if not db_path.exists():
+        raise FileNotFoundError(
+            f"Database not found at {db_path}. Run scripts/create_database.py first."
+        )
+
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     return conn
