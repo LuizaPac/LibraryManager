@@ -2,34 +2,63 @@ from db import connect
 
 
 class AuthorRepository:
-    def __init__(self):
-        pass
+    TABLE_NAME = "author"
+
+    def __init__(self, db_path=None):
+        self.db_path = db_path
 
     def create(self, name):
-        with connect() as conn:
+        with connect(self.db_path) as conn:
             cursor = conn.execute(
-                "INSERT INTO author (name) VALUES (?)",
+                f"INSERT INTO {self.TABLE_NAME} (name) VALUES (?)",
                 (name,),
             )
             return cursor.lastrowid
 
     def get_by_id(self, author_id):
-        with connect() as conn:
+        with connect(self.db_path) as conn:
             row = conn.execute(
-                "SELECT id, name FROM author WHERE id = ?",
+                f"SELECT id, name FROM {self.TABLE_NAME} WHERE id = ?",
                 (author_id,),
             ).fetchone()
             return tuple(row) if row else None
 
+    def find_by_name(self, name):
+        with connect(self.db_path) as conn:
+            row = conn.execute(
+                f"SELECT id, name FROM {self.TABLE_NAME} WHERE name = ?",
+                (name,),
+            ).fetchone()
+            return tuple(row) if row else None
+
+    def get_or_create(self, name):
+        author = self.find_by_name(name)
+        if author is not None:
+            return author
+
+        author_id = self.create(name)
+        return author_id, name
+
     def search_by_name(self, name):
-        with connect() as conn:
+        with connect(self.db_path) as conn:
             rows = conn.execute(
-                """
+                f"""
                 SELECT id, name
-                FROM author
+                FROM {self.TABLE_NAME}
                 WHERE name LIKE ?
                 ORDER BY name
                 """,
                 (f"%{name}%",),
+            ).fetchall()
+            return [tuple(row) for row in rows]
+
+    def get_all(self):
+        with connect(self.db_path) as conn:
+            rows = conn.execute(
+                f"""
+                SELECT id, name
+                FROM {self.TABLE_NAME}
+                ORDER BY name
+                """,
             ).fetchall()
             return [tuple(row) for row in rows]
