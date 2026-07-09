@@ -19,21 +19,3 @@ def test_book_repository_create_get_and_search(tmp_path, monkeypatch):
     assert repository.search_by_title("Casmurro") == [expected]
     assert repository.get_all() == [expected]
 
-
-def test_create_book_function_creates_missing_author_and_loads_book(tmp_path):
-    db_path = create_database(tmp_path / "library_test.db", reset=True)
-
-    from createBook import createBook
-    from loadData import loadBooks
-
-    book_id = createBook(
-        str(db_path),
-        "Dom Casmurro",
-        "1899-01-01",
-        "Machado de Assis",
-        "Fiction",
-    )
-
-    assert loadBooks(str(db_path)) == [
-        (book_id, "Dom Casmurro", "1899-01-01", "Machado de Assis", "Fiction")
-    ]

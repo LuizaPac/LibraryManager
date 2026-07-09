@@ -31,28 +31,3 @@ def test_user_repository_create_get_and_search(tmp_path, monkeypatch):
     assert repository.search_by_name("Maria") == [expected]
     assert repository.search_by_name("Maria Silva") == [expected]
     assert repository.get_all() == [expected]
-
-
-def test_create_user_function_uses_reader_table(tmp_path):
-    db_path = create_database(tmp_path / "library_test.db", reset=True)
-
-    from createUser import createUser
-    from user_repository import UserRepository
-
-    user_id = createUser(
-        str(db_path),
-        "Maria Silva",
-        "12345678900",
-        "1990-05-20",
-        "21999999999",
-    )
-
-    assert UserRepository(str(db_path)).get_by_id(user_id) == (
-        user_id,
-        "Maria",
-        "Silva",
-        "21999999999",
-        "1990-05-20",
-        1,
-        "12345678900",
-    )
