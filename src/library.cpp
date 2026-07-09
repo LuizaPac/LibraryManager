@@ -95,7 +95,7 @@ Library::Library() {
 
   // Lending : vector of int, int, int, std::string
   auto lendingList =
-      lendingRepository.attr("loadActiveLoans")(libraryName)
+      lendingRepository.attr("get_all")()
           .cast<std::vector<
               std::tuple<int, int, int, std::string, std::string>>>();
   for (const auto &loan : lendingList) {
@@ -277,6 +277,7 @@ void Library::returnBook(Document userDocument, int bookId) {
     if (lendings[i]->getBorrowedBook()->getBookId() == bookId) {
       // Check if is the same user
       if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument) {
+        // TODO: check if the book is really not on
         bool success = lendingRepository
                            .attr("check_in_book")(
                                lendings[i]->getBorrowedBook()->getBookId())
