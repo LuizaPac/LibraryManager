@@ -12,46 +12,22 @@ class InvalidTelephone : public std::exception {
         }
 };
 
-struct Telephone{
-    std::string telephoneNumber;
+class Telephone {
+    public:
+        Telephone();
 
-    // Standart constructor
-    Telephone(){}
+        Telephone(std::string);
 
-    Telephone(std::string telephoneNumber){
-        // Validation size
-        if (telephoneNumber.size() != 11){
-            throw InvalidTelephone();
-        }
+        friend std::ostream &operator<<(std::ostream &, const Telephone &);
 
-        this->telephoneNumber = telephoneNumber;
-    }
+        friend std::istream &operator>>(std::istream &, Telephone &);
 
-    friend std::ostream &operator<<(std::ostream &output, const Telephone &telephone){
-        output << "(" 
-            << telephone.telephoneNumber.substr(0, 2)
-            << ")"
-            << telephone.telephoneNumber.substr(2, 5)
-            << "-"
-            << telephone.telephoneNumber.substr(7, 4);
+        // Get methods
+        std::string getTelephone() const;
 
-        return output;
-    }
+    private:
+        std::string telephoneNumber;
 
-    friend std::istream &operator>>(std::istream &input, Telephone &telephone){
-        std::string tempTelephone;
-
-        input >> tempTelephone;
-
-        // Validation (same as constructor)
-        if (tempTelephone.length() != 11){
-            throw InvalidTelephone();
-        }
-
-        telephone.telephoneNumber = tempTelephone;
-
-        return input;
-    }
 };
 
-} // namespace library_system
+}
