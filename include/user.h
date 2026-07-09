@@ -5,13 +5,9 @@
 #include "telephone.h"
 #include <ostream>
 #include <string>
-#include <vector>
 #include <iostream>
 
 namespace library_system {
-
-// Class book just to say it exists
-class Book;
 
 class User{
     public:
@@ -19,17 +15,12 @@ class User{
 
         friend std::ostream &operator<<(std::ostream &, const User &);
 
-        void insertNewBorrowedBook(Book*);
-
-        void returnBook(Book*);
-
         // Get methods
         int getUserId() const;
         std::string getName() const;
         Document getDocumentNumber() const;
         Date getBirthDate() const;
         Telephone getTelephone() const;
-        std::vector<Book*> getBorrowedBooks() const;
 
     private:
         int userId;
@@ -37,7 +28,20 @@ class User{
         Document documentNumber;
         Date dateOfBirth;
         Telephone telephone;
-        std::vector<Book*> borrowedBooks;
+};
+
+class UserNotFound : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This user doesn't exist.";
+        }
+};
+
+class WrongUser : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. This user didn't borrowed this book.";
+        }
 };
 
 } // namespace library_system

@@ -1,5 +1,4 @@
 #include "user.h"
-#include "book.h"
 #include "document.h"
 #include "date.h"
 #include "telephone.h"
@@ -16,22 +15,9 @@ std::ostream &operator<<(std::ostream &output, const User &user){
     output << "    User ID: " << user.getUserId() << std::endl;
     output << "    Document number: " << user.getDocumentNumber() << std::endl;
     output << "    Day of birth: " << user.getBirthDate() << std::endl;
-    output << "    Telephone number: " << user.getTelephone() << std::endl;
+    output << "    Telephone number: " << user.getTelephone();
 
     return output;
-}
-
-void User::insertNewBorrowedBook(Book *newBook){
-    borrowedBooks.push_back(newBook);
-}
-
-void User::returnBook(Book *borrowedBook){
-    for (size_t i = 0; i < borrowedBooks.size(); i++){
-        if (borrowedBook->getBookId() == borrowedBooks[i]->getBookId()){
-            borrowedBooks.erase(borrowedBooks.begin() + i);
-            break;
-        }
-    }
 }
 
 int User::getUserId() const { return userId; }
@@ -39,6 +25,5 @@ std::string User::getName() const { return name; }
 Document User::getDocumentNumber() const { return documentNumber; }
 Date User::getBirthDate() const { return dateOfBirth; }
 Telephone User::getTelephone() const { return telephone; }
-std::vector<Book *> User::getBorrowedBooks() const { return borrowedBooks; }
 
 }

@@ -1,6 +1,6 @@
 import sqlite3
 
-def createUser(dbName, name, document, dateBirth):
+def createUser(dbName, name, document, dateBirth, telephone):
     # Connect to the database
     conn = sqlite3.connect(dbName)
     cursor = conn.cursor()
@@ -11,15 +11,16 @@ def createUser(dbName, name, document, dateBirth):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             document TEXT NOT NULL,
-            dateOfBirth TEXT NOT NULL
+            dateOfBirth TEXT NOT NULL,
+            telephone TEXT NOT NULL
         )
     ''')
 
     # Put the new user into the database
     cursor.execute('''
-        INSERT INTO user (name, document, dateOfBirth)
-        values (?, ?, ?)
-    ''', (name, document, dateBirth))
+        INSERT INTO user (name, document, dateOfBirth, telephone)
+        values (?, ?, ?, ?)
+    ''', (name, document, dateBirth, telephone))
 
     # Get the new id (last one generated)
     userId = cursor.lastrowid

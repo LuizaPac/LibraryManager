@@ -13,8 +13,19 @@ class InvalidDocument : public std::exception {
         }
 };
 
+class DuplicatedDocument : public std::exception {
+    public:
+        virtual const char *what() const throw(){
+            return "ERROR. There is another user with the same document.";
+        }
+};
+
+
 struct Document{
     std::string number;
+
+    // Standart constructor
+    Document(){}
 
     Document(std::string documentNumber){
         // Validation
@@ -29,7 +40,10 @@ struct Document{
     }
 
     friend std::ostream &operator<<(std::ostream &output, const Document &document){
-        output << document.number.substr(0, 3) << "." << document.number.substr(3, 3) << "." << document.number.substr(6, 3) << "-" << document.number.substr(9, 2) << std::endl;
+        output << document.number.substr(0, 3) 
+            << "." << document.number.substr(3, 3) 
+            << "." << document.number.substr(6, 3) 
+            << "-" << document.number.substr(9, 2);
         return output;
     }
 

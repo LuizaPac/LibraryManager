@@ -12,15 +12,19 @@ def newLoan(dbName, idUser, idBook):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             idUser INTEGER NOT NULL,
             idBook INTEGER NOT NULL,
+            checkOutDate TEXT NOT NULL,
             checkInDate TEXT
         )
     ''')
 
+    # Get today's date
+    today = date.today().strftime("%Y/%m/%d")
+
     # Put the new loan into the database
     cursor.execute('''
-        INSERT INTO checkedOutBooks (idUser, idBook)
-        values (?, ?)
-    ''', (idUser, idBook))
+        INSERT INTO checkedOutBooks (idUser, idBook, checkOutDate)
+        values (?, ?, ?)
+    ''', (idUser, idBook, today))
 
     # Get the new id (last one generated)
     loanId = cursor.lastrowid
@@ -36,7 +40,7 @@ def checkInBook(dbName, idBook):
     conn = sqlite3.connect(dbName)
     cursor = conn.cursor()
 
-    # Get today's data
+    # Get today's date
     today = date.today().isoformat()
 
     # Update the loan register with the checkin datte
