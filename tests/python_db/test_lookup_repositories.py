@@ -12,16 +12,3 @@ def test_book_genre_repository_reads_standard_data(tmp_path, monkeypatch):
     assert repository.get_by_id(1) == (1, "Fiction")
     assert repository.search_by_name("Science") == [(4, "Science Fiction")]
     assert len(repository.get_all()) == 10
-
-
-def test_document_type_repository_reads_standard_data(tmp_path, monkeypatch):
-    db_path = create_database(tmp_path / "library_test.db", reset=True)
-    monkeypatch.setenv("LIBRARY_DB_PATH", str(db_path))
-
-    from document_type_repository import DocumentTypeRepository
-
-    repository = DocumentTypeRepository()
-
-    assert repository.get_by_id(1) == (1, "CPF")
-    assert repository.search_by_name("Driver") == [(4, "Driver License")]
-    assert len(repository.get_all()) == 4

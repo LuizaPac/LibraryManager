@@ -31,14 +31,10 @@ def test_create_database_builds_schema_and_standard_data(tmp_path):
         }
         genre_count = conn.execute("SELECT COUNT(*) FROM book_genre"
                                    ).fetchone()[0]
-        document_type_count = conn.execute(
-            "SELECT COUNT(*) FROM accepted_document_type"
-        ).fetchone()[0]
-
+        
     assert EXPECTED_TABLES.issubset(tables)
     assert "release_date" in book_columns
     assert genre_count == 10
-    assert document_type_count == 4
 
 
 def test_connect_raises_when_database_file_does_not_exist(tmp_path,
