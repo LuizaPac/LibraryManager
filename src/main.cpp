@@ -9,7 +9,6 @@
 // 5. Mensagem de confirmação com pós operação bem sucessida
 // 8. Padronizar o nome do autor (maiuscula e minuscula para que a entrada não
 // seja case sensitive)
-// 9. fix: digitar algo não numerico no book_id da bug
 
 int main() {
   // Create the library object
