@@ -17,6 +17,18 @@
 
 namespace library_system {
 
+namespace {
+
+std::string dateStringFromNow(int daysFromNow = 0) {
+  std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
+  std::tm *targetLocalTime = std::localtime(&targetTime);
+  char buffer[11];
+  std::strftime(buffer, sizeof(buffer), "%Y/%m/%d", targetLocalTime);
+  return std::string(buffer);
+}
+
+} // namespace
+
 Library::Library() {
   namespace py = pybind11;
 
@@ -93,20 +105,16 @@ Library::Library() {
     books.push_back(new Book(id, title, releaseDate, author, genre));
   }
 
-  // Lending : vector of int, int, int, std::string
-  auto lendingList =
-      lendingRepository.attr("get_all")()
-          .cast<std::vector<
-              std::tuple<int, int, int, std::string, std::string>>>();
-  for (const auto &loan : lendingList) {
+  // Lending : only active lendings, where return_date is NULL.
+  for (py::handle rowHandle : lendingRepository.attr("get_active")()) {
+    py::tuple loan = rowHandle.cast<py::tuple>();
     User *currentUser = nullptr;
     Book *currentBook = nullptr;
 
-    // Get lendingId
-    int lendingId = std::get<0>(loan);
+    int lendingId = loan[0].cast<int>();
+    int userId = loan[1].cast<int>();
+    int bookId = loan[2].cast<int>();
 
-    // Search for the user
-    int userId = std::get<1>(loan);
     for (User *user : users) {
       if (user->getUserId() == userId) {
         currentUser = user;
@@ -114,8 +122,6 @@ Library::Library() {
       }
     }
 
-    // Search for the book
-    int bookId = std::get<2>(loan);
     for (Book *book : books) {
       if (book->getBookId() == bookId) {
         currentBook = book;
@@ -123,14 +129,11 @@ Library::Library() {
       }
     }
 
-    // Create the date struct
-    Date lendingDate(std::get<3>(loan));
-    Date returnDate(std::get<4>(loan));
+    Date lendingDate(loan[3].cast<std::string>());
 
-    // Create the lending object
     if (currentUser != nullptr && currentBook != nullptr) {
       lendings.push_back(new Lending(lendingId, currentUser, currentBook,
-                                     lendingDate, returnDate));
+                                     lendingDate, Date()));
     }
   }
 }
@@ -244,18 +247,13 @@ int Library::landBook(Document userDocument, int bookId) {
     if (user->getDocumentNumber() == userDocument) {
       for (Book *book : books) {
         if (book->getBookId() == bookId) {
-          std::time_t currentTime = std::time(nullptr);
-          // std::time_t expectedReturnTime = currentTime + (14 * 24 * 60 * 60);
-          // Get current day
-          std::tm *currentLocalTime = std::localtime(&currentTime);
-          char buffer[11];
-          std::strftime(&buffer[0], sizeof(buffer), "%Y-%m-%d",
-                        currentLocalTime);
-          Date currentDay(buffer);
+          std::string currentDate = dateStringFromNow();
+          Date currentDay(currentDate);
 
           int lendingId = lendingRepository
                               .attr("create")(user->getUserId(),
-                                              book->getBookId(), currentDay, "")
+                                              book->getBookId(), currentDate,
+                                              dateStringFromNow(14))
                               .cast<int>();
 
           lendings.push_back(
@@ -277,14 +275,17 @@ void Library::returnBook(Document userDocument, int bookId) {
     if (lendings[i]->getBorrowedBook()->getBookId() == bookId) {
       // Check if is the same user
       if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument) {
-        // TODO: check if the book is really not on
+        std::string returnDate = dateStringFromNow();
         bool success = lendingRepository
                            .attr("check_in_book")(
-                               lendings[i]->getBorrowedBook()->getBookId())
+                               lendings[i]->getBorrowedBook()->getBookId(),
+                               returnDate)
                            .cast<bool>();
 
         if (success) {
-          lendings[i]->setReturnDate(Date());
+          delete lendings[i];
+          lendings.erase(lendings.begin() + i);
+          return;
         } else {
           throw CheckInFailed();
         }

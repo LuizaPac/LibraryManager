@@ -40,6 +40,7 @@ class LendingRepository:
                 """,
                 (reader_id, book_id, lending_date, expected_return_date),
             )
+            conn.commit()
             return cursor.lastrowid
 
     def get_all(self):
@@ -125,4 +126,6 @@ class LendingRepository:
                 """,
                 (return_date, book_id),
             )
-            return cursor.rowcount > 0
+            success = cursor.rowcount > 0
+            conn.commit()
+            return success
