@@ -20,47 +20,22 @@ class DuplicatedDocument : public std::exception {
         }
 };
 
+class Document {
+    public:
+        Document();
 
-struct Document{
-    std::string number;
+        Document(std::string);
 
-    // Standart constructor
-    Document(){}
+        bool operator==(const Document &) const;
 
-    Document(std::string documentNumber){
-        // Validation
-        if (documentNumber.length() != 11){
-            throw InvalidDocument();
-        }
-        this->number = documentNumber;
-    }
+        friend std::ostream &operator<<(std::ostream &, const Document &);
 
-    bool operator==(const Document &otherDocument) const{
-        return this->number == otherDocument.number;
-    }
+        friend std::istream &operator>>(std::istream &, Document &);
 
-    friend std::ostream &operator<<(std::ostream &output, const Document &document){
-        output << document.number.substr(0, 3) 
-            << "." << document.number.substr(3, 3) 
-            << "." << document.number.substr(6, 3) 
-            << "-" << document.number.substr(9, 2);
-        return output;
-    }
+        std::string getNumber() const;
 
-    friend std::istream &operator>>(std::istream &input, Document &document){
-        std::string tempNumber;
-
-        input >> tempNumber;
-
-        // Validation (same as constructor)
-        if (tempNumber.length() != 11){
-            throw InvalidDocument();
-        }
-
-        document.number = tempNumber;
-
-        return input;
-    }
+    private:
+        std::string number;
 };
 
 } // namespace library_system
