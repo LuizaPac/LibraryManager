@@ -21,7 +21,6 @@ private:
   User *borrower;
   Book *borrowedBook;
   Date lendingDate;
-  Date returnDate;
 };
 
 } // namespace library_system
