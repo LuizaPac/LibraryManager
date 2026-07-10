@@ -69,9 +69,9 @@ Library::Library() {
     int id = std::get<0>(user);
     std::string fName = std::get<1>(user);
     std::string lName = std::get<2>(user);
-    Document document(std::get<3>(user));
-    Telephone telephone(std::get<5>(user));
+    Telephone telephone(std::get<3>(user));
     Date dateOfBirth(std::get<4>(user));
+    Document document(std::get<5>(user));
 
     users.push_back(new User(id, fName, lName, document, dateOfBirth,
                              Telephone(telephone)));
@@ -121,13 +121,8 @@ Library::Library() {
     Date lendingDate(normalizeDateString(loan[3].cast<std::string>()));
 
     if (currentUser != nullptr && currentBook != nullptr) {
-<<<<<<< HEAD
       lendings.push_back(
           new Lending(lendingId, currentUser, currentBook, lendingDate));
-=======
-      lendings.push_back(new Lending(lendingId, currentUser, currentBook,
-                                     lendingDate));
->>>>>>> 9732fdcaae246c2f45cc6c1c8983f4b7c70c4f61
     }
   }
 }
