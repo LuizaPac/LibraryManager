@@ -38,7 +38,7 @@ public:
   void printBooks() const;
 
   // Get method
-  std::vector<Genre *> getGenresVector();
+  std::vector<const Genre *> getGenresVector() const;
 
 private:
   std::string dateStringFromNow(int daysFromNow = 0) const;

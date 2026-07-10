@@ -106,7 +106,7 @@ int main() {
       std::string author = readLine("Author: ");
 
       int genreId;
-      std::vector<library_system::Genre *> genresVector =
+      std::vector<const library_system::Genre *> genresVector =
           library.getGenresVector();
 
       // Sort the vector using std::sort
@@ -118,8 +118,14 @@ int main() {
       for (const library_system::Genre *genre : genresVector) {
         std::cout << genre->getGenreId() << " - " << genre->getGenre() << "\n";
       }
-      std::cout << std::endl << "Genre ID: ";
-      std::cin >> genreId;
+      if (!readInt("Genre ID: ", genreId)) {
+        if (std::cin.eof()) {
+          break;
+        }
+        std::cout << "Genre ID must be numeric" << std::endl;
+        waitForEnter();
+        continue;
+      }
 
       try {
         library.newBook(title, releaseDate, author, genreId);

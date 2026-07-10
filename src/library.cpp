@@ -356,7 +356,9 @@ void Library::printBooks() const {
   }
 }
 
-std::vector<Genre *> Library::getGenresVector() { return genres; }
+std::vector<const Genre *> Library::getGenresVector() const {
+  return std::vector<const Genre *>(genres.begin(), genres.end());
+}
 
 std::string Library::dateStringFromNow(int daysFromNow) const {
   std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
