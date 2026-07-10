@@ -6,7 +6,7 @@ PIP = $(VENV)/bin/pip
 BUILD_DIR = build
 TARGET = $(BUILD_DIR)/main
 
-CXXFLAGS = -Wall -std=c++17 -I./include $(shell $(PYTHON) -m pybind11 --includes 2>/dev/null)
+CXXFLAGS = -Wall -std=c++17 -I./include -fvisibility=hidden $(shell $(PYTHON) -m pybind11 --includes 2>/dev/null)
 LDFLAGS = -lpython$(PYTHON_VERSION)
 
 SRC = $(wildcard src/*.cpp)
