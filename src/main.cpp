@@ -7,7 +7,6 @@
 // 1. nomes: getline em vez de cin
 // 2. limpar buffer
 // 5. Mensagem de confirmação com pós operação bem sucessida
-// 6. Print do nome do usuário com espaço
 // 7. Imprimir tabela de genero
 // 8. Padronizar o nome do autor (maiuscula e minuscula para que a entrada não
 // seja case sensitive)

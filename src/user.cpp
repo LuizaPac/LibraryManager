@@ -14,7 +14,7 @@ User::User(int userId, std::string fName, std::string lName,
       telephone(telephone) {}
 
 std::ostream &operator<<(std::ostream &output, const User &user) {
-  output << "User: " << user.getFirstName() + user.getLastName() << std::endl;
+  output << "User: " << user.getFirstName() << " " << user.getLastName() << std::endl;
   output << "    User ID: " << user.getUserId() << std::endl;
   output << "    Document number: " << user.getDocumentNumber() << std::endl;
   output << "    Day of birth: " << user.getBirthDate() << std::endl;
