@@ -7,7 +7,6 @@
 // 1. nomes: getline em vez de cin
 // 2. limpar buffer
 // 5. Mensagem de confirmação com pós operação bem sucessida
-// 7. Imprimir tabela de genero
 // 8. Padronizar o nome do autor (maiuscula e minuscula para que a entrada não
 // seja case sensitive)
 // 9. fix: digitar algo não numerico no book_id da bug
@@ -78,12 +77,16 @@ int main() {
       std::cout << "Author: ";
       std::cin >> author;
 
-      std::string genre;
-      std::cout << "Genre: ";
-      std::cin >> genre;
+      int genreId;
+      std::vector<Genre *> genresVector = library.getGenresVector();
+      for (const Genre *genre : genresVector){
+        std::cout << genre->getGenreId() << " - " << genre->getGenre() << std::endl;
+      }
+      std::cout << std::endl << "Genre ID: ";
+      std::cin >> genreId;
 
       try {
-        library.newBook(title, releaseDate, author, genre);
+        library.newBook(title, releaseDate, author, genreId);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
       }
