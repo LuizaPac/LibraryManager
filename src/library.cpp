@@ -325,6 +325,18 @@ void Library::bookStatus(int bookId) {
   throw BookNotFound();
 }
 
+void Library::printUsers() const{
+  for (const User *user : users){
+    std::cout << *user << std::endl << std::endl;
+  }
+}
+
+void Library::printBooks() const{
+  for (const Book *book : books){
+    std::cout << *book << std::endl << std::endl;
+  }
+}
+
 std::string Library::dateStringFromNow(int daysFromNow) const {
   std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
   std::tm *targetLocalTime = std::localtime(&targetTime);

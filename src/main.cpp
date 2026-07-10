@@ -6,8 +6,6 @@
 // TODO: FIX
 // 1. nomes: getline em vez de cin
 // 2. limpar buffer
-// 3. print todos os livros e todos os usuários
-//  obs: livro precisa dar get no nome do autor e genero
 // 4. Imprimir formato de data no aniversário
 // 5. Mensagem de confirmação com pós operação bem sucessida
 // 6. Print do nome do usuário com espaço
@@ -30,7 +28,9 @@ int main() {
     std::cout << "4 - Get book information" << std::endl;
     std::cout << "5 - Land a book" << std::endl;
     std::cout << "6 - Return a book" << std::endl;
-    std::cout << "7 - Get book status" << std::endl << std::endl;
+    std::cout << "7 - Get book status" << std::endl;
+    std::cout << "8 - Print all users" << std::endl;
+    std::cout << "9 - Print all books" << std::endl << std::endl;
     std::cout << "0 - Exit" << std::endl << std::endl;
 
     std::cout << "Option: ";
@@ -157,6 +157,10 @@ int main() {
       std::cin >> bookId;
 
       library.bookStatus(bookId);
+    } else if (option == 8) {
+      library.printUsers();
+    } else if (option == 9) {
+      library.printBooks();
     } else if (option == 0) {
       break;
     } else {

@@ -33,6 +33,10 @@ public:
 
   void bookStatus(int);
 
+  void printUsers() const;
+
+  void printBooks() const;
+
 private:
   std::string dateStringFromNow(int daysFromNow = 0) const;
   std::string normalizeDateString(std::string) const;
