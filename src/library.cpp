@@ -121,8 +121,13 @@ Library::Library() {
     Date lendingDate(normalizeDateString(loan[3].cast<std::string>()));
 
     if (currentUser != nullptr && currentBook != nullptr) {
+<<<<<<< HEAD
+      lendings.push_back(
+          new Lending(lendingId, currentUser, currentBook, lendingDate));
+=======
       lendings.push_back(new Lending(lendingId, currentUser, currentBook,
                                      lendingDate));
+>>>>>>> 9732fdcaae246c2f45cc6c1c8983f4b7c70c4f61
     }
   }
 }
