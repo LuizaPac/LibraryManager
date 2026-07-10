@@ -2,6 +2,7 @@
 #include "book.h"
 #include "date.h"
 #include "document.h"
+#include "genre.h"
 #include "lending.h"
 #include "telephone.h"
 #include <ctime>
@@ -16,19 +17,6 @@
 // frontend interfaces
 
 namespace library_system {
-
-namespace {
-
-std::string dateStringFromNow(int daysFromNow = 0) {
-  std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
-  std::tm *targetLocalTime = std::localtime(&targetTime);
-  char buffer[11];
-  std::strftime(buffer, sizeof(buffer), "%Y/%m/%d", targetLocalTime);
-  return std::string(buffer);
-}
-
-} // namespace
-
 Library::Library() {
   namespace py = pybind11;
 
@@ -70,7 +58,7 @@ Library::Library() {
     int id = std::get<0>(genre);
     std::string name = std::get<1>(genre);
 
-    // genres.push_back(new Genre(id, name));
+    genres.push_back(new Genre(id, name));
   }
 
   // user : vector of (int, str, str, str, str, str)
@@ -91,18 +79,21 @@ Library::Library() {
                              Telephone(telephone)));
   }
 
-  // book : vector of (int, str, str, str, str, str)
+  // book : vector of (id, title, release_date, author_id, genre_id)
   auto bookList =
       bookRepository.attr("get_all")()
-          .cast<std::vector<std::tuple<int, std::string, std::string,
-                                       std::string, std::string>>>();
+          .cast<std::vector<
+              std::tuple<int, std::string, std::string, int, int>>>();
   for (const auto &book : bookList) {
     int id = std::get<0>(book);
     std::string title = std::get<1>(book);
-    Date releaseDate(std::get<2>(book));
-    std::string author = std::get<3>(book);
-    std::string genre = std::get<4>(book);
-    books.push_back(new Book(id, title, releaseDate, author, genre));
+    Date releaseDate(normalizeDateString(std::get<2>(book)));
+    Author *author = findAuthorById(std::get<3>(book));
+    Genre *genre = findGenreById(std::get<4>(book));
+
+    if (author != nullptr && genre != nullptr) {
+      books.push_back(new Book(id, title, releaseDate, author, genre));
+    }
   }
 
   // Lending : only active lendings, where return_date is NULL.
@@ -129,7 +120,7 @@ Library::Library() {
       }
     }
 
-    Date lendingDate(loan[3].cast<std::string>());
+    Date lendingDate(normalizeDateString(loan[3].cast<std::string>()));
 
     if (currentUser != nullptr && currentBook != nullptr) {
       lendings.push_back(new Lending(lendingId, currentUser, currentBook,
@@ -150,6 +141,14 @@ Library::~Library() {
 
   for (Lending *lending : lendings) {
     delete lending;
+  }
+
+  for (Author *author : authors) {
+    delete author;
+  }
+
+  for (Genre *genre : genres) {
+    delete genre;
   }
 }
 
@@ -201,21 +200,23 @@ int Library::newBook(std::string title, Date releaseDate, std::string author,
   pybind11::tuple authorRow =
       authorRepository.attr("get_or_create")(author).cast<pybind11::tuple>();
   int authorId = authorRow[0].cast<int>();
-  authors[authorId] = authorRow[1].cast<std::string>();
+  Author *bookAuthor = findAuthorById(authorId);
+  if (bookAuthor == nullptr) {
+    bookAuthor = new Author(authorId, authorRow[1].cast<std::string>());
+    authors.push_back(bookAuthor);
+  }
 
-  /* TODO add genre object
-  int genreId = findIdByValue(bookGenres, genre);
-  if (genreId == 0) {
+  Genre *bookGenre = findGenreByName(genre);
+  if (bookGenre == nullptr) {
     throw std::runtime_error("ERROR. This book genre doesn't exist.");
-  }*/
+  }
 
   int bookId = bookRepository
                    .attr("create")(title, releaseDate.getStringDate(), authorId,
-                                   1) // genreId)
+                                   bookGenre->getGenreId())
                    .cast<int>();
 
-  // TODO: add pointer to genre and author to create the book
-  books.push_back(new Book(bookId, title, releaseDate, author, genre));
+  books.push_back(new Book(bookId, title, releaseDate, bookAuthor, bookGenre));
 
   return bookId;
 }
@@ -250,11 +251,11 @@ int Library::landBook(Document userDocument, int bookId) {
           std::string currentDate = dateStringFromNow();
           Date currentDay(currentDate);
 
-          int lendingId = lendingRepository
-                              .attr("create")(user->getUserId(),
-                                              book->getBookId(), currentDate,
-                                              dateStringFromNow(14))
-                              .cast<int>();
+          int lendingId =
+              lendingRepository
+                  .attr("create")(user->getUserId(), book->getBookId(),
+                                  currentDate, dateStringFromNow(14))
+                  .cast<int>();
 
           lendings.push_back(
               new Lending(lendingId, user, book, currentDay, Date()));
@@ -276,11 +277,11 @@ void Library::returnBook(Document userDocument, int bookId) {
       // Check if is the same user
       if (lendings[i]->getBorrower()->getDocumentNumber() == userDocument) {
         std::string returnDate = dateStringFromNow();
-        bool success = lendingRepository
-                           .attr("check_in_book")(
-                               lendings[i]->getBorrowedBook()->getBookId(),
-                               returnDate)
-                           .cast<bool>();
+        bool success =
+            lendingRepository
+                .attr("check_in_book")(
+                    lendings[i]->getBorrowedBook()->getBookId(), returnDate)
+                .cast<bool>();
 
         if (success) {
           delete lendings[i];
@@ -325,6 +326,50 @@ void Library::bookStatus(int bookId) {
   }
 
   throw BookNotFound();
+}
+
+std::string Library::dateStringFromNow(int daysFromNow) const {
+  std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
+  std::tm *targetLocalTime = std::localtime(&targetTime);
+  char buffer[11];
+  std::strftime(buffer, sizeof(buffer), "%Y/%m/%d", targetLocalTime);
+  return std::string(buffer);
+}
+
+std::string Library::normalizeDateString(std::string dateString) const {
+  for (char &character : dateString) {
+    if (character == '-') {
+      character = '/';
+    }
+  }
+  return dateString;
+}
+
+Author *Library::findAuthorById(int authorId) const {
+  for (Author *author : authors) {
+    if (author->get_id() == authorId) {
+      return author;
+    }
+  }
+  return nullptr;
+}
+
+Genre *Library::findGenreById(int genreId) const {
+  for (Genre *genre : genres) {
+    if (genre->getGenreId() == genreId) {
+      return genre;
+    }
+  }
+  return nullptr;
+}
+
+Genre *Library::findGenreByName(const std::string &genreName) const {
+  for (Genre *genre : genres) {
+    if (genre->getGenre() == genreName) {
+      return genre;
+    }
+  }
+  return nullptr;
 }
 
 } // namespace library_system

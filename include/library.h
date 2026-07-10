@@ -4,6 +4,7 @@
 #include "book.h"
 #include "date.h"
 #include "document.h"
+#include "genre.h"
 #include "lending.h"
 #include "telephone.h"
 #include "user.h"
@@ -33,12 +34,18 @@ public:
   void bookStatus(int);
 
 private:
+  std::string dateStringFromNow(int daysFromNow = 0) const;
+  std::string normalizeDateString(std::string) const;
+  Author *findAuthorById(int) const;
+  Genre *findGenreById(int) const;
+  Genre *findGenreByName(const std::string &) const;
+
   std::string libraryName;
   std::vector<User *> users;
   std::vector<Book *> books;
   std::vector<Lending *> lendings;
   std::vector<Author *> authors;
-  // std::vector<Genre *> genres;
+  std::vector<Genre *> genres;
   pybind11::scoped_interpreter interpreter;
   pybind11::object authorRepository;
   pybind11::object bookGenreRepository;
