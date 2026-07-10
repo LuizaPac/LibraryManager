@@ -5,6 +5,7 @@
 #include "genre.h"
 #include "lending.h"
 #include "telephone.h"
+#include <cctype>
 #include <ctime>
 #include <iostream>
 #include <ostream>
@@ -46,7 +47,7 @@ Library::Library() {
                         .cast<std::vector<std::tuple<int, std::string>>>();
   for (const auto &author : authorList) {
     int id = std::get<0>(author);
-    std::string name = std::get<1>(author);
+    std::string name = setProper(std::get<1>(author));
 
     authors.push_back(new Author(id, name));
   }
@@ -69,8 +70,8 @@ Library::Library() {
                                      std::string, std::string>>>();
   for (const auto &user : userList) {
     int id = std::get<0>(user);
-    std::string fName = std::get<1>(user);
-    std::string lName = std::get<2>(user);
+    std::string fName = setProper(std::get<1>(user));
+    std::string lName = setProper(std::get<2>(user));
     Telephone telephone(std::get<3>(user));
     Date dateOfBirth(std::get<4>(user));
     Document document(std::get<5>(user));
@@ -86,7 +87,7 @@ Library::Library() {
               std::tuple<int, std::string, std::string, int, int>>>();
   for (const auto &book : bookList) {
     int id = std::get<0>(book);
-    std::string title = std::get<1>(book);
+    std::string title = setProper(std::get<1>(book));
     Date releaseDate(normalizeDateString(std::get<2>(book)));
     Author *author = findAuthorById(std::get<3>(book));
     Genre *genre = findGenreById(std::get<4>(book));
@@ -154,6 +155,9 @@ Library::~Library() {
 
 int Library::newUser(std::string fname, std::string lname, Document document,
                      Date dateOfBirth, Telephone telephone) {
+  fname = setProper(fname);
+  lname = setProper(lname);
+
   for (const User *user : users) {
     if (document == user->getDocumentNumber()) {
       throw DuplicatedDocument();
@@ -193,6 +197,9 @@ void Library::userInfo(Document documentNumber) {
 // TODO: Find author id before pushig (let the user chose the author)
 int Library::newBook(std::string title, Date releaseDate, std::string author,
                      std::string genre) {
+  title = setProper(title);
+  author = setProper(author);
+
   for (const Book *book : books) {
     if (book->getTitle() == title) {
       throw DuplicatedBook();
@@ -352,6 +359,24 @@ std::string Library::normalizeDateString(std::string dateString) const {
     }
   }
   return dateString;
+}
+
+std::string Library::setProper(std::string text) const {
+  bool newWord = true;
+
+  for (char &character : text) {
+    unsigned char current = static_cast<unsigned char>(character);
+
+    if (std::isalpha(current)) {
+      character = newWord ? static_cast<char>(std::toupper(current))
+                          : static_cast<char>(std::tolower(current));
+      newWord = false;
+    } else {
+      newWord = true;
+    }
+  }
+
+  return text;
 }
 
 Author *Library::findAuthorById(int authorId) const {

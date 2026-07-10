@@ -10,8 +10,6 @@
 //  obs: livro precisa dar get no nome do autor e genero
 // 6. Print do nome do usuário com espaço
 // 7. Imprimir tabela de genero
-// 8. Padronizar o nome do autor (maiuscula e minuscula para que a entrada não
-// seja case sensitive)
 // 9. fix: digitar algo não numerico no book_id da bug
 
 void clearInputBuffer() {

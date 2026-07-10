@@ -36,6 +36,7 @@ public:
 private:
   std::string dateStringFromNow(int daysFromNow = 0) const;
   std::string normalizeDateString(std::string) const;
+  std::string setProper(std::string) const;
   Author *findAuthorById(int) const;
   Genre *findGenreById(int) const;
   Genre *findGenreByName(const std::string &) const;
