@@ -1,5 +1,7 @@
 # Library Management System
 
+Link to github repository: [GitHub](https://github.com/LuizaPac/LibraryManager)
+
 ## Project purpose
 
 This project develops a library collection management system focused on managing users, books, loans, and returns. The system supports creating user accounts, listing user information, adding books to the collection, listing book information, lending books, returning books, and checking whether a book is available or currently borrowed.
