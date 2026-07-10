@@ -1,14 +1,12 @@
 #include "document.h"
 #include "library.h"
 #include <iostream>
+#include <limits>
 #include <string>
 
 // TODO: FIX
-// 1. nomes: getline em vez de cin
-// 2. limpar buffer
 // 3. print todos os livros e todos os usuários
 //  obs: livro precisa dar get no nome do autor e genero
-// 4. Imprimir formato de data no aniversário
 // 5. Mensagem de confirmação com pós operação bem sucessida
 // 6. Print do nome do usuário com espaço
 // 7. Imprimir tabela de genero
@@ -16,12 +14,37 @@
 // seja case sensitive)
 // 9. fix: digitar algo não numerico no book_id da bug
 
+void clearInputBuffer() {
+  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+std::string readString(const std::string &prompt) {
+  std::string input;
+  std::cout << prompt;
+  std::cin >> input;
+  clearInputBuffer();
+  return input;
+}
+
+std::string readLine(const std::string &prompt) {
+  std::string input;
+  std::cout << prompt;
+  std::getline(std::cin >> std::ws, input);
+  return input;
+}
+
+void waitForEnter() {
+  std::cout << std::endl << "Press Enter to continue...";
+  std::cin.get();
+}
+
 int main() {
   // Create the library object
   library_system::Library library;
 
   // Menu loop
   while (true) {
+    std::cout << "\033[2J\033[1;1H";
     int option;
     std::cout << "========== Library ==========" << std::endl;
     std::cout << "1 - Create a new user" << std::endl;
@@ -35,54 +58,37 @@ int main() {
 
     std::cout << "Option: ";
     std::cin >> option;
+    clearInputBuffer();
 
     if (option == 1) {
       try {
-        std::string firstName, lastName;
-        library_system::Document document;
-        library_system::Date birthday;
-        library_system::Telephone telephone;
-
-        std::cout << "First name: ";
-        std::cin >> firstName;
-
-        std::cout << "Last name: ";
-        std::cin >> lastName;
-
-        std::cout << "Document: ";
-        std::cin >> document;
-
-        std::cout << "Birthday: ";
-        std::cin >> birthday;
-
-        std::cout << "Telephone: ";
-        std::cin >> telephone;
+        std::string firstName = readLine("First name: ");
+        std::string lastName = readLine("Last name: ");
+        library_system::Document document(readString("Document: "));
+        library_system::Date birthday(readString("Birthday (YYYY/MM/DD): "));
+        library_system::Telephone telephone(
+            readString("Telephone (XXXXXXXXXXX): "));
 
         library.newUser(firstName, lastName, document, birthday, telephone);
+
       } catch (const std::exception &e) {
         std::cout << e.what() << '\n';
       }
     } else if (option == 2) {
-      std::string title;
-      std::cout << "Title: ";
-      std::cin >> title;
+      std::string title = readLine("Title: ");
 
       library_system::Date releaseDate;
-      std::cout << "Release date (YYYY/MM/DD): ";
       try {
-        std::cin >> releaseDate;
+        releaseDate =
+            library_system::Date(readString("Release date (YYYY/MM/DD): "));
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
 
-      std::string author;
-      std::cout << "Author: ";
-      std::cin >> author;
-
-      std::string genre;
-      std::cout << "Genre: ";
-      std::cin >> genre;
+      std::string author = readLine("Author: ");
+      std::string genre = readLine("Genre: ");
 
       try {
         library.newBook(title, releaseDate, author, genre);
@@ -94,20 +100,24 @@ int main() {
       std::cout << "Document (XXXXXXXXXXX): ";
       try {
         std::cin >> document;
+        clearInputBuffer();
         library.userInfo(document);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
     } else if (option == 4) {
       int bookId;
       std::cout << "Book ID: ";
       std::cin >> bookId;
+      clearInputBuffer();
 
       try {
         library.bookInfo(bookId);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
     } else if (option == 5) {
@@ -115,19 +125,23 @@ int main() {
       std::cout << "Document (XXXXXXXXXXX): ";
       try {
         std::cin >> userDocument;
+        clearInputBuffer();
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
 
       int bookId;
       std::cout << "Book ID: ";
       std::cin >> bookId;
+      clearInputBuffer();
 
       try {
         library.landBook(userDocument, bookId);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
 
@@ -136,25 +150,30 @@ int main() {
       std::cout << "Document (XXXXXXXXXXX): ";
       try {
         std::cin >> userDocument;
+        clearInputBuffer();
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
 
       int bookId;
       std::cout << "Book ID: ";
       std::cin >> bookId;
+      clearInputBuffer();
 
       try {
         library.returnBook(userDocument, bookId);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
+        waitForEnter();
         continue;
       }
     } else if (option == 7) {
       int bookId;
       std::cout << "Book ID: ";
       std::cin >> bookId;
+      clearInputBuffer();
 
       library.bookStatus(bookId);
     } else if (option == 0) {
@@ -162,5 +181,6 @@ int main() {
     } else {
       std::cout << "Select a valid option" << std::endl;
     }
+    waitForEnter();
   }
 }
