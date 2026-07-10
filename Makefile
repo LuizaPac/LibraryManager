@@ -12,7 +12,7 @@ LDFLAGS = -lpython$(PYTHON_VERSION)
 SRC = $(wildcard src/*.cpp)
 OBJ = $(patsubst src/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 
-.PHONY: all system-deps setup venv install data rmdata pytest run clean
+.PHONY: all system-deps setup venv install data sampledata rmdata pytest run clean
 
 all: $(TARGET)
 
@@ -29,6 +29,9 @@ install: venv
 
 data: setup
 	$(PYTHON) scripts/create_database.py
+
+sampledata: data
+	sqlite3 library.db < sample_data.sql
 
 rmdata:
 	rm -f library.db library.db-journal library.db-shm library.db-wal

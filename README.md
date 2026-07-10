@@ -32,6 +32,12 @@ This creates `.venv/` and installs `requirements.txt`, including `pytest` and `p
 make data
 ```
 
+To create the database with sample authors, books, readers, and lendings:
+
+```bash
+make sampledata
+```
+
 To delete the local database and SQLite sidecar files:
 
 ```bash
@@ -73,6 +79,14 @@ Or create database manually with standard values:
 ```bash
 sqlite3 library.db < schema.sql
 sqlite3 library.db < standard_data.sql
+sqlite3 library.db < sample_data.sql
+```
+
+Recreate a clean database with sample rows:
+
+```bash
+make rmdata
+make sampledata
 ```
 
 Edit database:
