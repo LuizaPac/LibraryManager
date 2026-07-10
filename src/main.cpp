@@ -7,7 +7,6 @@
 // TODO: FIX
 // 3. print todos os livros e todos os usuários
 //  obs: livro precisa dar get no nome do autor e genero
-// 5. Mensagem de confirmação com pós operação bem sucessida
 // 6. Print do nome do usuário com espaço
 // 7. Imprimir tabela de genero
 // 8. Padronizar o nome do autor (maiuscula e minuscula para que a entrada não
@@ -34,7 +33,7 @@ std::string readLine(const std::string &prompt) {
 }
 
 void waitForEnter() {
-  std::cout << std::endl << "Press Enter to continue...";
+  std::cout << std::endl << "\nPress Enter to continue...";
   std::cin.get();
 }
 

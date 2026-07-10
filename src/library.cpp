@@ -6,6 +6,8 @@
 #include "lending.h"
 #include "telephone.h"
 #include <ctime>
+#include <iostream>
+#include <ostream>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <stdexcept>
@@ -167,6 +169,8 @@ int Library::newUser(std::string fname, std::string lname, Document document,
   users.push_back(
       new User(userId, fname, lname, document, dateOfBirth, telephone));
 
+  std::cout << "\nA new Reader has been registered as a User!" << std::endl;
+  std::cout << *users.back();
   return userId;
 }
 
@@ -216,6 +220,8 @@ int Library::newBook(std::string title, Date releaseDate, std::string author,
 
   books.push_back(new Book(bookId, title, releaseDate, bookAuthor, bookGenre));
 
+  std::cout << "\nNew book added to the database!" << std::endl;
+  std::cout << *books.back();
   return bookId;
 }
 
@@ -257,6 +263,9 @@ int Library::landBook(Document userDocument, int bookId) {
 
           lendings.push_back(new Lending(lendingId, user, book, currentDay));
 
+          std::cout << "\nA book has been boorrowed!" << std::endl;
+          std::cout << *lendings.back();
+
           return lendingId;
         }
       }
@@ -281,6 +290,9 @@ void Library::returnBook(Document userDocument, int bookId) {
                 .cast<bool>();
 
         if (success) {
+          std::cout << "A Book is being returned!" << std::endl;
+          std::cout << *lendings[i];
+
           delete lendings[i];
           lendings.erase(lendings.begin() + i);
           return;
