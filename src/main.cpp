@@ -77,8 +77,8 @@ int main() {
       std::cin >> author;
 
       int genreId;
-      std::vector<Genre *> genresVector = library.getGenresVector();
-      for (const Genre *genre : genresVector){
+      std::vector<library_system::Genre *> genresVector = library.getGenresVector();
+      for (const library_system::Genre *genre : genresVector){
         std::cout << genre->getGenreId() << " - " << genre->getGenre() << std::endl;
       }
       std::cout << std::endl << "Genre ID: ";
