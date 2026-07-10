@@ -49,7 +49,6 @@ private:
   pybind11::scoped_interpreter interpreter;
   pybind11::object authorRepository;
   pybind11::object bookGenreRepository;
-  pybind11::object documentTypeRepository;
   pybind11::object userRepository;
   pybind11::object bookRepository;
   pybind11::object lendingRepository;

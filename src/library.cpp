@@ -31,8 +31,6 @@ Library::Library() {
       py::module_::import("author_repository").attr("AuthorRepository")();
   bookGenreRepository = py::module_::import("book_genre_repository")
                             .attr("BookGenreRepository")();
-  documentTypeRepository = py::module_::import("document_type_repository")
-                               .attr("DocumentTypeRepository")();
   userRepository =
       py::module_::import("user_repository").attr("UserRepository")();
   bookRepository =
@@ -123,8 +121,13 @@ Library::Library() {
     Date lendingDate(normalizeDateString(loan[3].cast<std::string>()));
 
     if (currentUser != nullptr && currentBook != nullptr) {
+<<<<<<< HEAD
       lendings.push_back(
           new Lending(lendingId, currentUser, currentBook, lendingDate));
+=======
+      lendings.push_back(new Lending(lendingId, currentUser, currentBook,
+                                     lendingDate));
+>>>>>>> 9732fdcaae246c2f45cc6c1c8983f4b7c70c4f61
     }
   }
 }
@@ -184,8 +187,7 @@ void Library::userInfo(Document documentNumber) {
   }
 
   if (!userFound) {
-    std::cout << "There is not any user with the document number "
-              << documentNumber << std::endl;
+    throw UserNotFound();
   }
 }
 
@@ -234,7 +236,7 @@ void Library::bookInfo(int bookId) {
   }
 
   if (!bookFound) {
-    std::cout << "There is no book with ID " << bookId << std::endl;
+    throw BookNotFound();
   }
 }
 
