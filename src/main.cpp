@@ -2,6 +2,7 @@
 #include "library.h"
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 // TODO: FIX
 // 1. nomes: getline em vez de cin
@@ -78,8 +79,15 @@ int main() {
 
       int genreId;
       std::vector<library_system::Genre *> genresVector = library.getGenresVector();
+
+      // Sort the vector using std::sort
+      std::sort(genresVector.begin(), genresVector.end(), 
+        [](const library_system::Genre* a, const library_system::Genre* b) {
+          return a->getGenreId() < b->getGenreId();
+        }
+      );
       for (const library_system::Genre *genre : genresVector){
-        std::cout << genre->getGenreId() << " - " << genre->getGenre() << std::endl;
+        std::cout << genre->getGenreId() << " - " << genre->getGenre() << "\n";
       }
       std::cout << std::endl << "Genre ID: ";
       std::cin >> genreId;
