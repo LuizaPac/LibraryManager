@@ -1,5 +1,6 @@
 #include "document.h"
 #include "library.h"
+#include <csignal>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -32,6 +33,22 @@ std::string readLine(const std::string &prompt) {
   return input;
 }
 
+bool readInt(const std::string &prompt, int &input) {
+  std::cout << prompt;
+
+  if (std::cin >> input) {
+    clearInputBuffer();
+    return true;
+  }
+
+  if (!std::cin.eof()) {
+    std::cin.clear();
+    clearInputBuffer();
+  }
+
+  return false;
+}
+
 void waitForEnter() {
   std::cout << std::endl << "\nPress Enter to continue...";
   std::cin.get();
@@ -40,6 +57,7 @@ void waitForEnter() {
 int main() {
   // Create the library object
   library_system::Library library;
+  std::signal(SIGINT, SIG_DFL);
 
   // Menu loop
   while (true) {
@@ -55,9 +73,14 @@ int main() {
     std::cout << "7 - Get book status" << std::endl << std::endl;
     std::cout << "0 - Exit" << std::endl << std::endl;
 
-    std::cout << "Option: ";
-    std::cin >> option;
-    clearInputBuffer();
+    if (!readInt("Option: ", option)) {
+      if (std::cin.eof()) {
+        break;
+      }
+      std::cout << "Select a numeric option" << std::endl;
+      waitForEnter();
+      continue;
+    }
 
     if (option == 1) {
       try {
@@ -108,9 +131,14 @@ int main() {
       }
     } else if (option == 4) {
       int bookId;
-      std::cout << "Book ID: ";
-      std::cin >> bookId;
-      clearInputBuffer();
+      if (!readInt("Book ID: ", bookId)) {
+        if (std::cin.eof()) {
+          break;
+        }
+        std::cout << "Book ID must be numeric" << std::endl;
+        waitForEnter();
+        continue;
+      }
 
       try {
         library.bookInfo(bookId);
@@ -132,9 +160,14 @@ int main() {
       }
 
       int bookId;
-      std::cout << "Book ID: ";
-      std::cin >> bookId;
-      clearInputBuffer();
+      if (!readInt("Book ID: ", bookId)) {
+        if (std::cin.eof()) {
+          break;
+        }
+        std::cout << "Book ID must be numeric" << std::endl;
+        waitForEnter();
+        continue;
+      }
 
       try {
         library.landBook(userDocument, bookId);
@@ -157,9 +190,14 @@ int main() {
       }
 
       int bookId;
-      std::cout << "Book ID: ";
-      std::cin >> bookId;
-      clearInputBuffer();
+      if (!readInt("Book ID: ", bookId)) {
+        if (std::cin.eof()) {
+          break;
+        }
+        std::cout << "Book ID must be numeric" << std::endl;
+        waitForEnter();
+        continue;
+      }
 
       try {
         library.returnBook(userDocument, bookId);
@@ -170,9 +208,14 @@ int main() {
       }
     } else if (option == 7) {
       int bookId;
-      std::cout << "Book ID: ";
-      std::cin >> bookId;
-      clearInputBuffer();
+      if (!readInt("Book ID: ", bookId)) {
+        if (std::cin.eof()) {
+          break;
+        }
+        std::cout << "Book ID must be numeric" << std::endl;
+        waitForEnter();
+        continue;
+      }
 
       library.bookStatus(bookId);
     } else if (option == 0) {
