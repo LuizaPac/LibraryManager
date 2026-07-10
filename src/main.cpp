@@ -6,7 +6,6 @@
 // TODO: FIX
 // 1. nomes: getline em vez de cin
 // 2. limpar buffer
-// 4. Imprimir formato de data no aniversário
 // 5. Mensagem de confirmação com pós operação bem sucessida
 // 6. Print do nome do usuário com espaço
 // 7. Imprimir tabela de genero
@@ -52,7 +51,7 @@ int main() {
         std::cout << "Document: ";
         std::cin >> document;
 
-        std::cout << "Birthday: ";
+        std::cout << "Birthday (YYYY/MM/DD): ";
         std::cin >> birthday;
 
         std::cout << "Telephone: ";
