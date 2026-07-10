@@ -184,8 +184,7 @@ void Library::userInfo(Document documentNumber) {
   }
 
   if (!userFound) {
-    std::cout << "There is not any user with the document number "
-              << documentNumber << std::endl;
+    throw UserNotFound()
   }
 }
 
@@ -234,7 +233,7 @@ void Library::bookInfo(int bookId) {
   }
 
   if (!bookFound) {
-    std::cout << "There is no book with ID " << bookId << std::endl;
+    throw BookNotFound();
   }
 }
 
