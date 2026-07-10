@@ -20,15 +20,15 @@ int main(){
         std::cout << "7 - Get book status" << std::endl << std::endl;
         std::cout << "0 - Exit" << std::endl << std::endl;
 
-        std::cout << "Option: "
-        std::cin >> opition;
+        std::cout << "Option: ";
+        std::cin >> option;
 
         if (option == 1) {
             try {
                 std::string firstName, lastName;
-                Document document;
-                Date birthday;
-                Telephone telephone;
+                library_system::Document document;
+                library_system::Date birthday;
+                library_system::Telephone telephone;
 
                 std::cout << "First name: ";
                 std::cin >> firstName;

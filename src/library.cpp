@@ -31,8 +31,6 @@ Library::Library() {
       py::module_::import("author_repository").attr("AuthorRepository")();
   bookGenreRepository = py::module_::import("book_genre_repository")
                             .attr("BookGenreRepository")();
-  documentTypeRepository = py::module_::import("document_type_repository")
-                               .attr("DocumentTypeRepository")();
   userRepository =
       py::module_::import("user_repository").attr("UserRepository")();
   bookRepository =
@@ -124,7 +122,7 @@ Library::Library() {
 
     if (currentUser != nullptr && currentBook != nullptr) {
       lendings.push_back(new Lending(lendingId, currentUser, currentBook,
-                                     lendingDate);
+                                     lendingDate));
     }
   }
 }
@@ -184,7 +182,7 @@ void Library::userInfo(Document documentNumber) {
   }
 
   if (!userFound) {
-    throw UserNotFound()
+    throw UserNotFound();
   }
 }
 
