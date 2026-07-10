@@ -35,6 +35,7 @@ class BookRepository:
                 """,
                 (title, release_date, author_id, genre_id),
             )
+            conn.commit()
             return cursor.lastrowid
 
     def get_all(self):

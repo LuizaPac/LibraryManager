@@ -54,6 +54,7 @@ class UserRepository:
                     document,
                 ),
             )
+            conn.commit()
             return cursor.lastrowid
 
     def get_all(self):

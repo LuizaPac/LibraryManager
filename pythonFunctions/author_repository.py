@@ -32,6 +32,7 @@ class AuthorRepository:
                 f"INSERT INTO {self.TABLE_NAME} (name) VALUES (?)",
                 (name,),
             )
+            conn.commit()
             return cursor.lastrowid
 
     def get_by_id(self, author_id):
