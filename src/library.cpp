@@ -5,7 +5,10 @@
 #include "genre.h"
 #include "lending.h"
 #include "telephone.h"
+#include <cctype>
 #include <ctime>
+#include <iostream>
+#include <ostream>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <stdexcept>
@@ -44,7 +47,7 @@ Library::Library() {
                         .cast<std::vector<std::tuple<int, std::string>>>();
   for (const auto &author : authorList) {
     int id = std::get<0>(author);
-    std::string name = std::get<1>(author);
+    std::string name = setProper(std::get<1>(author));
 
     authors.push_back(new Author(id, name));
   }
@@ -67,8 +70,8 @@ Library::Library() {
                                      std::string, std::string>>>();
   for (const auto &user : userList) {
     int id = std::get<0>(user);
-    std::string fName = std::get<1>(user);
-    std::string lName = std::get<2>(user);
+    std::string fName = setProper(std::get<1>(user));
+    std::string lName = setProper(std::get<2>(user));
     Telephone telephone(std::get<3>(user));
     Date dateOfBirth(std::get<4>(user));
     Document document(std::get<5>(user));
@@ -84,7 +87,7 @@ Library::Library() {
               std::tuple<int, std::string, std::string, int, int>>>();
   for (const auto &book : bookList) {
     int id = std::get<0>(book);
-    std::string title = std::get<1>(book);
+    std::string title = setProper(std::get<1>(book));
     Date releaseDate(normalizeDateString(std::get<2>(book)));
     Author *author = findAuthorById(std::get<3>(book));
     Genre *genre = findGenreById(std::get<4>(book));
@@ -152,6 +155,9 @@ Library::~Library() {
 
 int Library::newUser(std::string fname, std::string lname, Document document,
                      Date dateOfBirth, Telephone telephone) {
+  fname = setProper(fname);
+  lname = setProper(lname);
+
   for (const User *user : users) {
     if (document == user->getDocumentNumber()) {
       throw DuplicatedDocument();
@@ -167,6 +173,8 @@ int Library::newUser(std::string fname, std::string lname, Document document,
   users.push_back(
       new User(userId, fname, lname, document, dateOfBirth, telephone));
 
+  std::cout << "\nA new Reader has been registered as a User!" << std::endl;
+  std::cout << *users.back();
   return userId;
 }
 
@@ -189,6 +197,9 @@ void Library::userInfo(Document documentNumber) {
 // TODO: Find author id before pushig (let the user chose the author)
 int Library::newBook(std::string title, Date releaseDate, std::string author,
                      int genreId) {
+  title = setProper(title);
+  author = setProper(author);
+
   for (const Book *book : books) {
     if (book->getTitle() == title) {
       throw DuplicatedBook();
@@ -216,6 +227,8 @@ int Library::newBook(std::string title, Date releaseDate, std::string author,
 
   books.push_back(new Book(bookId, title, releaseDate, bookAuthor, bookGenre));
 
+  std::cout << "\nNew book added to the database!" << std::endl;
+  std::cout << *books.back();
   return bookId;
 }
 
@@ -257,6 +270,9 @@ int Library::landBook(Document userDocument, int bookId) {
 
           lendings.push_back(new Lending(lendingId, user, book, currentDay));
 
+          std::cout << "\nA book has been boorrowed!" << std::endl;
+          std::cout << *lendings.back();
+
           return lendingId;
         }
       }
@@ -281,6 +297,9 @@ void Library::returnBook(Document userDocument, int bookId) {
                 .cast<bool>();
 
         if (success) {
+          std::cout << "A Book is being returned!" << std::endl;
+          std::cout << *lendings[i];
+
           delete lendings[i];
           lendings.erase(lendings.begin() + i);
           return;
@@ -325,19 +344,21 @@ void Library::bookStatus(int bookId) {
   throw BookNotFound();
 }
 
-void Library::printUsers() const{
-  for (const User *user : users){
+void Library::printUsers() const {
+  for (const User *user : users) {
     std::cout << *user << std::endl << std::endl;
   }
 }
 
-void Library::printBooks() const{
-  for (const Book *book : books){
+void Library::printBooks() const {
+  for (const Book *book : books) {
     std::cout << *book << std::endl << std::endl;
   }
 }
 
-std::vector<Genre *> Library::getGenresVector() { return genres; }
+std::vector<const Genre *> Library::getGenresVector() const {
+  return std::vector<const Genre *>(genres.begin(), genres.end());
+}
 
 std::string Library::dateStringFromNow(int daysFromNow) const {
   std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);
@@ -354,6 +375,24 @@ std::string Library::normalizeDateString(std::string dateString) const {
     }
   }
   return dateString;
+}
+
+std::string Library::setProper(std::string text) const {
+  bool newWord = true;
+
+  for (char &character : text) {
+    unsigned char current = static_cast<unsigned char>(character);
+
+    if (std::isalpha(current)) {
+      character = newWord ? static_cast<char>(std::toupper(current))
+                          : static_cast<char>(std::tolower(current));
+      newWord = false;
+    } else {
+      newWord = true;
+    }
+  }
+
+  return text;
 }
 
 Author *Library::findAuthorById(int authorId) const {

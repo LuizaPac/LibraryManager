@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS reader (
     email VARCHAR(100) UNIQUE,
     phone_number VARCHAR(20),
     birthday DATE NOT NULL,
-    document VARCHAR(20)
+    document VARCHAR(20) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS book (

@@ -38,11 +38,12 @@ public:
   void printBooks() const;
 
   // Get method
-  std::vector<Genre *> getGenresVector();
+  std::vector<const Genre *> getGenresVector() const;
 
 private:
   std::string dateStringFromNow(int daysFromNow = 0) const;
   std::string normalizeDateString(std::string) const;
+  std::string setProper(std::string) const;
   Author *findAuthorById(int) const;
   Genre *findGenreById(int) const;
   Genre *findGenreByName(const std::string &) const;
