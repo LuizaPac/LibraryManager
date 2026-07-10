@@ -196,7 +196,7 @@ void Library::userInfo(Document documentNumber) {
 
 // TODO: Find author id before pushig (let the user chose the author)
 int Library::newBook(std::string title, Date releaseDate, std::string author,
-                     std::string genre) {
+                     int genreId) {
   title = setProper(title);
   author = setProper(author);
 
@@ -215,7 +215,7 @@ int Library::newBook(std::string title, Date releaseDate, std::string author,
     authors.push_back(bookAuthor);
   }
 
-  Genre *bookGenre = findGenreByName(genre);
+  Genre *bookGenre = findGenreById(genreId);
   if (bookGenre == nullptr) {
     throw std::runtime_error("ERROR. This book genre doesn't exist.");
   }
@@ -343,6 +343,20 @@ void Library::bookStatus(int bookId) {
 
   throw BookNotFound();
 }
+
+void Library::printUsers() const {
+  for (const User *user : users) {
+    std::cout << *user << std::endl << std::endl;
+  }
+}
+
+void Library::printBooks() const {
+  for (const Book *book : books) {
+    std::cout << *book << std::endl << std::endl;
+  }
+}
+
+std::vector<Genre *> Library::getGenresVector() { return genres; }
 
 std::string Library::dateStringFromNow(int daysFromNow) const {
   std::time_t targetTime = std::time(nullptr) + (daysFromNow * 24 * 60 * 60);

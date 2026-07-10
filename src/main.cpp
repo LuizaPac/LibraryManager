@@ -1,16 +1,10 @@
 #include "document.h"
 #include "library.h"
+#include <algorithm>
 #include <csignal>
 #include <iostream>
 #include <limits>
 #include <string>
-
-// TODO: FIX
-// 3. print todos os livros e todos os usuários
-//  obs: livro precisa dar get no nome do autor e genero
-// 6. Print do nome do usuário com espaço
-// 7. Imprimir tabela de genero
-// 9. fix: digitar algo não numerico no book_id da bug
 
 void clearInputBuffer() {
   std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -68,7 +62,9 @@ int main() {
     std::cout << "4 - Get book information" << std::endl;
     std::cout << "5 - Land a book" << std::endl;
     std::cout << "6 - Return a book" << std::endl;
-    std::cout << "7 - Get book status" << std::endl << std::endl;
+    std::cout << "7 - Get book status" << std::endl;
+    std::cout << "8 - Print all users" << std::endl;
+    std::cout << "9 - Print all books" << std::endl << std::endl;
     std::cout << "0 - Exit" << std::endl << std::endl;
 
     if (!readInt("Option: ", option)) {
@@ -108,10 +104,25 @@ int main() {
       }
 
       std::string author = readLine("Author: ");
-      std::string genre = readLine("Genre: ");
+
+      int genreId;
+      std::vector<library_system::Genre *> genresVector =
+          library.getGenresVector();
+
+      // Sort the vector using std::sort
+      std::sort(
+          genresVector.begin(), genresVector.end(),
+          [](const library_system::Genre *a, const library_system::Genre *b) {
+            return a->getGenreId() < b->getGenreId();
+          });
+      for (const library_system::Genre *genre : genresVector) {
+        std::cout << genre->getGenreId() << " - " << genre->getGenre() << "\n";
+      }
+      std::cout << std::endl << "Genre ID: ";
+      std::cin >> genreId;
 
       try {
-        library.newBook(title, releaseDate, author, genre);
+        library.newBook(title, releaseDate, author, genreId);
       } catch (const std::exception &e) {
         std::cout << e.what() << std::endl;
       }
@@ -216,6 +227,10 @@ int main() {
       }
 
       library.bookStatus(bookId);
+    } else if (option == 8) {
+      library.printUsers();
+    } else if (option == 9) {
+      library.printBooks();
     } else if (option == 0) {
       break;
     } else {

@@ -23,7 +23,7 @@ public:
   int newUser(std::string, std::string, Document, Date, Telephone);
   void userInfo(Document);
 
-  int newBook(std::string, Date, std::string, std::string);
+  int newBook(std::string, Date, std::string, int);
 
   void bookInfo(int);
 
@@ -32,6 +32,13 @@ public:
   void returnBook(Document, int);
 
   void bookStatus(int);
+
+  void printUsers() const;
+
+  void printBooks() const;
+
+  // Get method
+  std::vector<Genre *> getGenresVector();
 
 private:
   std::string dateStringFromNow(int daysFromNow = 0) const;
