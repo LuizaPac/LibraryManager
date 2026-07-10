@@ -123,8 +123,8 @@ Library::Library() {
     Date lendingDate(normalizeDateString(loan[3].cast<std::string>()));
 
     if (currentUser != nullptr && currentBook != nullptr) {
-      lendings.push_back(new Lending(lendingId, currentUser, currentBook,
-                                     lendingDate);
+      lendings.push_back(
+          new Lending(lendingId, currentUser, currentBook, lendingDate));
     }
   }
 }
