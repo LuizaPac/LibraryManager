@@ -3,6 +3,7 @@ build/
 **/build/
 *.o
 *.out
+main
 
 # Python caches and test artifacts
 __pycache__/

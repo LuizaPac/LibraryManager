@@ -1,22 +1,88 @@
 # Library Management System
 
-Backend in sqlite and python, frontend in c++.
+Backend in SQLite and Python, frontend in C++.
 
-# Database instructions
+## How to Run
 
-Create Database with standard values:
+### 1. Setup
+On Ubuntu/Debian, run this once:
 
-```sql
- sqlite3 library.db < schema.sql
- sqlite3 library db < standard_data.sql
+```bash
+make system-deps
 ```
 
-Edit Database:
-```sql
+This installs the C++ compiler, SQLite CLI, Python venv support, and Python development headers required by pybind11.
+
+If you are not on Ubuntu/Debian, install equivalent packages manually:
+
+- `g++`
+- `sqlite3`
+- Python 3.12 development headers
+- Python 3.12 venv support
+
+```bash
+make setup
+```
+
+This creates `.venv/` and installs `requirements.txt`, including `pytest` and `pybind11`.
+
+### 2. Create the database
+
+```bash
+make data
+```
+
+To delete the local database and SQLite sidecar files:
+
+```bash
+make rmdata
+```
+
+### 3. Run program
+
+Build and run main program
+```bash
+make
+make run
+```
+
+Run python (database connection) tests, cpp specific tests or all tests
+```bash
+make pytest
+make ctest (not yet avaliable)
+make tests
+```
+
+
+If you need to rebuild from scratch:
+```bash
+make clean
+make
+```
+
+## Database Instructions
+
+Create database with the project helper:
+
+```bash
+make data
+```
+
+Or create database manually with standard values:
+
+```bash
+sqlite3 library.db < schema.sql
+sqlite3 library.db < standard_data.sql
+```
+
+Edit database:
+
+```bash
 sqlite3 library.db
 ```
 
-Exit Database edit mode:
+Exit database edit mode:
+
 ```sql
 .quit
 ```

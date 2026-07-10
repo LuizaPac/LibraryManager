@@ -1,18 +1,54 @@
 CXX = g++
-CXXFLAGS = -Wall -std=c++17 -I./include $(shell python3 -m pybind11 --includes)
-LDFLAGS = -lpython3.12
+PYTHON_VERSION = 3.12
+VENV = .venv
+PYTHON = $(VENV)/bin/python
+PIP = $(VENV)/bin/pip
+BUILD_DIR = build
+TARGET = $(BUILD_DIR)/main
+
+CXXFLAGS = -Wall -std=c++17 -I./include $(shell $(PYTHON) -m pybind11 --includes 2>/dev/null)
+LDFLAGS = -lpython$(PYTHON_VERSION)
 
 SRC = $(wildcard src/*.cpp)
+OBJ = $(patsubst src/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 
-OBJ = $(SRC:.cpp=.o)
+.PHONY: all system-deps setup venv install data rmdata pytest run clean
 
-all: main
+all: $(TARGET)
 
-main: $(OBJ)
+system-deps:
+	sudo apt install g++ python$(PYTHON_VERSION)-dev python$(PYTHON_VERSION)-venv sqlite3
+
+setup: venv install
+
+venv:
+	python$(PYTHON_VERSION) -m venv $(VENV)
+
+install: venv
+	$(PIP) install -r requirements.txt
+
+data: setup
+	$(PYTHON) scripts/create_database.py
+
+rmdata:
+	rm -f library.db library.db-journal library.db-shm library.db-wal
+
+pytest: setup
+	PYTHONPATH=pythonFunctions:. $(PYTHON) -m pytest tests/python_db
+
+tests: pytest
+
+run: $(TARGET)
+	./$(TARGET)
+
+$(TARGET): $(OBJ)
 	$(CXX) $(OBJ) -o $@ $(LDFLAGS)
 
-src/%.o: src/%.cpp
+$(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
 clean:
-	rm -f src/*.o main
+	rm -rf $(BUILD_DIR)
