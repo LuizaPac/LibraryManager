@@ -20,7 +20,7 @@ public:
 
   ~Library();
 
-  int newUser(std::string, Document, Date, Telephone);
+  int newUser(std::string, std::string, Document, Date, Telephone);
   void userInfo(Document);
 
   int newBook(std::string, Date, std::string, std::string);

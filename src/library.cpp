@@ -124,7 +124,7 @@ Library::Library() {
 
     if (currentUser != nullptr && currentBook != nullptr) {
       lendings.push_back(new Lending(lendingId, currentUser, currentBook,
-                                     lendingDate, Date()));
+                                     lendingDate);
     }
   }
 }
@@ -160,10 +160,11 @@ int Library::newUser(std::string fname, std::string lname, Document document,
     }
   }
 
-  int userId = userRepository
-                   .attr("create")(fname, lname, telephone.telephoneNumber,
-                                   dateOfBirth.getStringDate(), document.number)
-                   .cast<int>();
+  int userId =
+      userRepository
+          .attr("create")(fname, lname, telephone.getTelephone(),
+                          dateOfBirth.getStringDate(), document.getNumber())
+          .cast<int>();
 
   users.push_back(
       new User(userId, fname, lname, document, dateOfBirth, telephone));
@@ -257,8 +258,7 @@ int Library::landBook(Document userDocument, int bookId) {
                                   currentDate, dateStringFromNow(14))
                   .cast<int>();
 
-          lendings.push_back(
-              new Lending(lendingId, user, book, currentDay, Date()));
+          lendings.push_back(new Lending(lendingId, user, book, currentDay));
 
           return lendingId;
         }
